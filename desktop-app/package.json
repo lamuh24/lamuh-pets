@@ -1,6 +1,6 @@
 {
   "name": "lamuh-pets",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lamuh Desktop Pets - Premium AI Companions",
   "main": "src/main/index.js",
   "scripts": {

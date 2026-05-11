@@ -5,6 +5,8 @@ Agent: Codex
 Date: 2026-05-11
 
 ## What Was Done
+- Updated the Electron-bundled Pet Hatch Studio renderer at `desktop-app/src/renderer/pet_studio.html` with the same import-feedback fix as the web app.
+- Bumped the desktop app from `1.0.0` to `1.0.1` and rebuilt the Windows installer: `desktop-app/dist/Lamuh Pets Setup 1.0.1.exe`.
 - Deployed import-feedback update to Netlify production at `https://lamuh-pet-studio-demo.netlify.app` from commit `ca97524`.
 - Added `deploy/_redirects` pointing `/` to `/index.html` so the Netlify publish directory includes a valid root redirect without warnings on future deploys.
 - Updated Pet Hatch Studio import feedback so imported character/base images are marked as loaded, render immediately in the main pet preview area, and imported animation rows switch the preview to the uploaded row.
@@ -27,6 +29,7 @@ Date: 2026-05-11
 - Netlify is configured with `deploy/` as the publish directory.
 
 ## What's Next
+- Publish the `1.0.1` desktop release assets (`Lamuh Pets Setup 1.0.1.exe`, `.blockmap`, and `latest.yml`) to GitHub Releases so existing Electron installs can see the auto-update.
 - After any future user-facing deploy change, run `netlify deploy --prod --dir deploy` and verify the production HTML contains the expected marker.
 - If upload behavior is revisited, test the real file picker manually or with a browser driver that supports file input injection; the in-app Browser runtime could verify the sample-import path but did not expose `setInputFiles` for hidden file inputs.
 - If desired, connect the GitHub repo to Netlify/GitHub Pages for public hosting.
