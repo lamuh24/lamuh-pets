@@ -5,6 +5,9 @@ Agent: Codex
 Date: 2026-05-11
 
 ## What Was Done
+- Updated Pet Hatch Studio import feedback so imported character/base images are marked as loaded, render immediately in the main pet preview area, and imported animation rows switch the preview to the uploaded row.
+- Mirrored the import-feedback update into `deploy/index.html` for the static publish copy.
+- Verified the app on `http://127.0.0.1:8791/pet_studio.html`: Load sample import shows loaded base state, ready preview border, visible imported animation, 9 rows ready, `Pet ready`, and no browser console errors.
 - Initialized this folder as a git repository on `main`.
 - Added GitHub remote `https://github.com/lamuh24/lamuh-pets.git`.
 - Added repo hygiene files: `.gitignore`, `README.md`, and `netlify.toml`.
@@ -16,10 +19,13 @@ Date: 2026-05-11
 - None
 
 ## Key Decisions
+- Codex handled this update directly; no need to hand off to Antigravity or Claude because the change was scoped to existing HTML/CSS/JS behavior.
+- Base-only imports now cache a fitted 192x208 preview canvas at import time so the animation loop does not re-trim the image every frame.
 - Do not commit `node_modules`, `desktop-app/dist`, `desktop-app/build_tmp`, `desktop-app/python-dist`, runtime logs/state, generated pet outputs, or local Netlify metadata.
 - Netlify is configured with `deploy/` as the publish directory.
 
 ## What's Next
+- If upload behavior is revisited, test the real file picker manually or with a browser driver that supports file input injection; the in-app Browser runtime could verify the sample-import path but did not expose `setInputFiles` for hidden file inputs.
 - If desired, connect the GitHub repo to Netlify/GitHub Pages for public hosting.
 - For release downloads, publish the Windows installer from `desktop-app/dist` as a GitHub Release asset rather than committing it to the repo.
 

@@ -733,6 +733,7 @@
     }
 
     .base-preview {
+      position: relative;
       width: 92px;
       height: 92px;
       border-radius: 8px;
@@ -748,6 +749,26 @@
       overflow: hidden;
       display: grid;
       place-items: center;
+    }
+
+    .base-preview.loaded {
+      border-color: rgba(119, 214, 113, 0.7);
+      box-shadow: 0 0 0 1px rgba(119, 214, 113, 0.18), 0 12px 26px rgba(0, 0, 0, 0.22);
+    }
+
+    .base-preview.loaded::after {
+      content: "Imported";
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(7, 19, 17, 0.88);
+      border: 1px solid rgba(119, 214, 113, 0.45);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
     }
 
     .base-preview img {
@@ -862,6 +883,11 @@
       overflow: hidden;
     }
 
+    .pet-stage.has-import {
+      border-color: rgba(119, 214, 113, 0.55);
+      box-shadow: inset 0 0 0 1px rgba(119, 214, 113, 0.12);
+    }
+
     #preview-canvas {
       width: 192px;
       height: 208px;
@@ -875,6 +901,10 @@
       bottom: 12px;
       color: var(--quiet);
       font-size: 12px;
+    }
+
+    .preview-help.ready {
+      color: var(--green);
     }
 
     .preview-toolbar {
@@ -1771,6 +1801,8 @@
     const app = {
       rows: new Map(),
       baseDataUrl: "",
+      baseImage: null,
+      basePreviewCanvas: null,
       activeState: "idle",
       frame: 0,
       fps: 10,
@@ -1800,7 +1832,9 @@
       previewState: document.getElementById("preview-state"),
       previewStatePill: document.getElementById("preview-state-pill"),
       previewFps: document.getElementById("preview-fps"),
+      petStage: document.querySelector(".pet-stage"),
       previewCanvas: document.getElementById("preview-canvas"),
+      previewHelp: document.querySelector(".preview-help"),
       atlasCache: document.getElementById("atlas-cache"),
       rowsReady: document.getElementById("rows-ready"),
       errorCount: document.getElementById("error-count"),
@@ -2412,6 +2446,29 @@
       return removedArtifacts;
     }
 
+    function makePreviewCellCanvas(img) {
+      const source = makeCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+      source.getContext("2d").drawImage(img, 0, 0, source.width, source.height);
+      const box = trimBox(source) || { x: 0, y: 0, w: source.width, h: source.height, bg: [0, 0, 0, 0] };
+      const object = makeCanvas(box.w, box.h);
+      object.getContext("2d").drawImage(source, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
+      cleanBackground(object, box.bg);
+      removeDetachedArtifacts(object);
+
+      const padX = 8;
+      const padY = 6;
+      const scale = Math.min((CELL_W - padX * 2) / box.w, (CELL_H - padY * 2) / box.h);
+      const dw = Math.max(1, Math.round(box.w * scale));
+      const dh = Math.max(1, Math.round(box.h * scale));
+      const dx = Math.round((CELL_W - dw) / 2);
+      const dy = Math.round((CELL_H - dh) / 2);
+      const out = makeCanvas(CELL_W, CELL_H);
+      const outCtx = out.getContext("2d");
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.drawImage(object, 0, 0, box.w, box.h, dx, dy, dw, dh);
+      return out;
+    }
+
     function normalizeRowFromImage(img, state) {
       const out = makeCanvas(ATLAS_W, CELL_H);
       const outCtx = out.getContext("2d");
@@ -2493,6 +2550,8 @@
 
     function storeRow(state, canvas, validation, source) {
       app.rows.set(state.id, { canvas, validation, source, updatedAt: Date.now() });
+      app.activeState = state.id;
+      if (el.previewState) el.previewState.value = state.id;
       addLog(validation.ok ? "ok" : "warning", `${state.label} row imported from ${source}.`);
       renderRows();
       renderQuickCards();
@@ -2562,11 +2621,16 @@
 
     async function importBaseFromDataUrl(dataUrl, source) {
       app.baseDataUrl = dataUrl;
+      app.baseImage = await imageFromSrc(dataUrl);
+      app.basePreviewCanvas = makePreviewCellCanvas(app.baseImage);
+      el.basePreview.classList.add("loaded");
       el.basePreview.innerHTML = `<img alt="" src="${dataUrl}">`;
       el.baseCopy.textContent = `${source} is now the identity lock. Analyzing the character...`;
       addLog("ok", `Base reference loaded from ${source}.`);
+      drawPreview(true);
       await analyzeBaseReference(dataUrl, source);
       renderQuickCards();
+      drawPreview(true);
     }
 
     async function importRowFile(file, state) {
@@ -3013,6 +3077,8 @@
       if (row) {
         const frame = Math.floor(app.frame) % state.frames;
         ctx.drawImage(row.canvas, frame * CELL_W, 0, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+      } else if (app.basePreviewCanvas) {
+        ctx.drawImage(app.basePreviewCanvas, 0, 0);
       } else {
         ctx.fillStyle = "rgba(72, 215, 210, 0.08)";
         ctx.fillRect(30, 52, 132, 104);
@@ -3020,6 +3086,16 @@
         ctx.strokeRect(30.5, 52.5, 131, 103);
       }
       el.previewStatePill.textContent = state.label;
+      const hasVisibleImport = Boolean(row || app.basePreviewCanvas);
+      if (el.petStage) el.petStage.classList.toggle("has-import", hasVisibleImport);
+      if (el.previewHelp) {
+        el.previewHelp.classList.toggle("ready", hasVisibleImport);
+        el.previewHelp.textContent = row
+          ? `${state.label} animation imported.`
+          : app.basePreviewCanvas
+            ? "Character image imported. Add animation rows next."
+            : "Preview updates as animations are added.";
+      }
       copyPreviewToFlow();
     }
 
@@ -3268,6 +3344,9 @@
 
       async function handleQsFile(file) {
         if (!file || !file.type.startsWith("image/")) return;
+        dropzone.classList.remove("loaded");
+        spawnBtn.disabled = true;
+        spawnBtn.textContent = "Importing spritesheet...";
 
         // Update drop zone to loading state
         dropzone.querySelector(".qs-icon").textContent = "⏳";
