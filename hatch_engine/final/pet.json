@@ -1,0 +1,6 @@
+{
+  "id": "lamuhtest",
+  "displayName": "LamuhTest",
+  "description": "A custom generated pet.",
+  "spritesheetPath": "spritesheet.webp"
+}

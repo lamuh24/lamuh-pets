@@ -1,0 +1,9 @@
+{
+  "ROWS": 12,
+  "extra_state_map": {
+    "naruto_hand_signs": 9,
+    "conqueror_gear_pose": 10,
+    "dragon_ball_beam_clash": 11
+  },
+  "spritesheet": "lamuh_extended_spritesheet_12x8.webp"
+}

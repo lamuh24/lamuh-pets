@@ -1,0 +1,3334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Hatch Studio</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101114;
+      --panel: #181a1f;
+      --panel-2: #20242a;
+      --line: #343943;
+      --line-soft: #272b33;
+      --text: #f3f5f8;
+      --muted: #a2a9b6;
+      --quiet: #737c8b;
+      --cyan: #48d7d2;
+      --green: #77d671;
+      --amber: #f0b34e;
+      --red: #ff6b6b;
+      --blue: #7aa7ff;
+      --magenta: #ff4fc3;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --cell-w: 192px;
+      --cell-h: 208px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, #121418 0%, #0f1013 100%);
+      color: var(--text);
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: 8px;
+      min-height: 36px;
+      padding: 0 12px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: #4a5260;
+      background: #252a32;
+    }
+
+    button.primary {
+      background: #224c4f;
+      border-color: #327276;
+      color: #ecffff;
+    }
+
+    button.primary:hover {
+      background: #286064;
+    }
+
+    button.good {
+      background: #23472a;
+      border-color: #3e7446;
+    }
+
+    button.warn {
+      background: #4f3720;
+      border-color: #846039;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      color: var(--text);
+      background: #111318;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      padding: 10px 11px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+      line-height: 1.35;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(72, 215, 210, 0.12);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      min-height: 58px;
+      padding: 8px 18px;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(16, 17, 20, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 230px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid #39565b;
+      background:
+        linear-gradient(135deg, rgba(72, 215, 210, 0.26), rgba(240, 179, 78, 0.15)),
+        #171a1f;
+      position: relative;
+    }
+
+    .mark::before,
+    .mark::after {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      top: 12px;
+      border-radius: 2px;
+      background: var(--cyan);
+    }
+
+    .mark::before {
+      left: 9px;
+    }
+
+    .mark::after {
+      right: 9px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: 0;
+      font-weight: 800;
+      color: #60d394;
+    }
+
+    .title span {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .top-actions #advanced-toggle-btn,
+    .top-actions #load-sample-btn {
+      display: none;
+    }
+
+    .topbar-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex: 1 1 auto;
+      min-width: 360px;
+      color: var(--quiet);
+      font-size: 13px;
+    }
+
+    .topbar-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .topbar-step .step-dot {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #11161b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .topbar-step.active {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .topbar-step.active .step-dot {
+      color: #eaffff;
+      border-color: rgba(72, 215, 210, 0.6);
+      background: #136562;
+      box-shadow: 0 0 0 4px rgba(72, 215, 210, 0.12);
+    }
+
+    .topbar-flow .rule {
+      width: 30px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .flow-strip {
+      display: block;
+      background: #080c0d;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .flow-intro {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 28px 20px;
+      background: transparent;
+    }
+
+    .flow-eyebrow {
+      margin: 0 0 10px;
+      color: #9af1e8;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .flow-intro h2 {
+      margin: 0;
+      font-size: clamp(32px, 3.4vw, 44px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .flow-intro h2 em {
+      color: #a6fff4;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+    }
+
+    .flow-intro p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.36;
+      max-width: 760px;
+    }
+
+    .flow-panel {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .flow-panel[hidden] {
+      display: none;
+    }
+
+    .flow-context {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #11161a;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .flow-context strong {
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .flow-context span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .flow-context[hidden] {
+      display: none;
+    }
+
+    .flow-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .flow-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .flow-field label,
+    .flow-field .flow-label-row {
+      color: var(--quiet);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .flow-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .flow-input,
+    .flow-textarea {
+      width: 100%;
+      color: var(--text);
+      background: #111519;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .flow-input {
+      min-height: 62px;
+      padding: 0 18px;
+      border-color: rgba(72, 215, 210, 0.65);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .flow-textarea {
+      min-height: 82px;
+      padding: 14px 16px;
+      resize: vertical;
+      font-size: 17px;
+      line-height: 1.38;
+    }
+
+    .flow-suggestions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+
+    .flow-chip {
+      border: 1px solid var(--line-soft);
+      border-radius: 999px;
+      min-height: 30px;
+      padding: 0 12px;
+      color: var(--muted);
+      background: #161b21;
+      font-size: 14px;
+    }
+
+    .flow-divider {
+      height: 1px;
+      margin-top: 2px;
+      background: var(--line-soft);
+    }
+
+    .flow-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-next {
+      min-height: 48px;
+      padding: 0 24px;
+      border-color: transparent;
+      background: linear-gradient(135deg, #37d7cf, #35d9bf);
+      color: #061112;
+      font-size: 17px;
+      font-weight: 850;
+    }
+
+    .flow-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .flow-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .flow-card.ready {
+      border-color: rgba(119, 214, 113, 0.46);
+      background: #151f18;
+    }
+
+    .flow-card.warn {
+      border-color: rgba(240, 179, 78, 0.45);
+      background: #1f1a13;
+    }
+
+    .flow-card header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .flow-card strong {
+      font-size: 15px;
+    }
+
+    .flow-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .flow-preview-mini {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 18px;
+      align-items: center;
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #101419;
+    }
+
+    .flow-preview-canvas {
+      width: 160px;
+      height: 174px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background:
+        linear-gradient(45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(-45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1b1e25 75%),
+        linear-gradient(-45deg, transparent 75%, #1b1e25 75%),
+        #111318;
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #15181d;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--quiet);
+      flex: 0 0 auto;
+    }
+
+    .dot.ok {
+      background: var(--green);
+    }
+
+    .dot.warn {
+      background: var(--amber);
+    }
+
+    .dot.err {
+      background: var(--red);
+    }
+
+    .workspace {
+      min-height: 0;
+      display: none;
+      grid-template-columns: minmax(360px, 460px) minmax(480px, 1fr);
+      gap: 1px;
+      background: var(--line-soft);
+      align-items: start;
+    }
+
+    body.show-advanced .workspace {
+      display: grid;
+    }
+
+    .panel {
+      min-height: 0;
+      overflow: visible;
+      background: var(--bg);
+      padding: 18px;
+    }
+
+    .section {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2,
+    .section-title h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      padding: 4px;
+      background: #101217;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .segmented button {
+      border: 0;
+      min-height: 32px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .segmented button.active {
+      background: var(--panel-2);
+      color: var(--text);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .button-row button {
+      flex: 1 1 auto;
+    }
+
+    .hero-card {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-color: #2d4a4d;
+      background: #172023;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .step-card {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #15181d;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .step-card strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .step-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick-card {
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #15181d;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .quick-card.ready {
+      border-color: rgba(119, 214, 113, 0.45);
+      background: #172019;
+    }
+
+    .quick-card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quick-card strong {
+      font-size: 14px;
+    }
+
+    .quick-card span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .base-box {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 104px;
+    }
+
+    .base-preview {
+      width: 92px;
+      height: 92px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(45deg, #242832 25%, transparent 25%),
+        linear-gradient(-45deg, #242832 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #242832 75%),
+        linear-gradient(-45deg, transparent 75%, #242832 75%),
+        #16181e;
+      background-size: 18px 18px;
+      background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .base-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .base-copy {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .queue {
+      display: grid;
+      gap: 8px;
+    }
+
+    .row-item {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .row-item.active {
+      border-color: rgba(72, 215, 210, 0.6);
+      background: #1a2024;
+    }
+
+    .row-index {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: #111318;
+      border: 1px solid var(--line);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .row-main {
+      min-width: 0;
+    }
+
+    .row-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .row-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+      color: var(--quiet);
+      font-size: 12px;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .row-actions button {
+      min-height: 32px;
+      padding: 0 9px;
+      font-size: 12px;
+    }
+
+    .preview-shell {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+      gap: 12px;
+      min-height: 100%;
+    }
+
+    .simple-preview {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto auto auto auto minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    .pet-stage {
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background:
+        linear-gradient(45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(-45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1b1e25 75%),
+        linear-gradient(-45deg, transparent 75%, #1b1e25 75%),
+        #111318;
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #preview-canvas {
+      width: 192px;
+      height: 208px;
+      image-rendering: auto;
+      filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.35));
+    }
+
+    .preview-help {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      color: var(--quiet);
+      font-size: 12px;
+    }
+
+    .preview-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 8px;
+    }
+
+    .meter-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .meter {
+      padding: 10px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .meter strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .meter span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .log {
+      min-height: 170px;
+      max-height: 240px;
+      overflow: auto;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: #111318;
+      padding: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .log-entry {
+      display: grid;
+      grid-template-columns: 11px 1fr;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .log-entry:last-child {
+      border-bottom: 0;
+    }
+
+    .prompt-drawer {
+      position: fixed;
+      inset: auto 18px 18px auto;
+      width: min(620px, calc(100vw - 36px));
+      max-height: min(70vh, 640px);
+      display: none;
+      grid-template-rows: auto minmax(220px, 1fr) auto;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #15181d;
+      box-shadow: 0 22px 60px var(--shadow);
+      z-index: 20;
+    }
+
+    .prompt-drawer.open {
+      display: grid;
+    }
+
+    .prompt-drawer textarea {
+      min-height: 260px;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .hidden-input {
+      display: none;
+    }
+
+    /* ── Quick Spawn Shortcut ────────────────────── */
+    .quick-spawn-shortcut {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid rgba(72, 215, 210, 0.25);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(72, 215, 210, 0.04) 0%, rgba(119, 214, 113, 0.03) 100%),
+        #0e1215;
+    }
+
+    .quick-spawn-shortcut h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+      color: #a6fff4;
+      font-weight: 800;
+    }
+
+    .quick-spawn-shortcut > p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .qs-layout {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 720px) {
+      .qs-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .qs-dropzone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 130px;
+      border: 2px dashed rgba(72, 215, 210, 0.35);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .qs-dropzone:hover {
+      border-color: rgba(72, 215, 210, 0.6);
+      background: rgba(72, 215, 210, 0.04);
+    }
+
+    .qs-dropzone.drag-over {
+      border-color: var(--cyan);
+      background: rgba(72, 215, 210, 0.08);
+      box-shadow: 0 0 30px rgba(72, 215, 210, 0.12);
+    }
+
+    .qs-dropzone.loaded {
+      border-color: rgba(119, 214, 113, 0.55);
+      border-style: solid;
+      background: rgba(119, 214, 113, 0.05);
+    }
+
+    .qs-dropzone .qs-icon {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .qs-dropzone .qs-label {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .qs-dropzone .qs-label strong {
+      color: var(--cyan);
+    }
+
+    .qs-dropzone.loaded .qs-icon {
+      color: var(--green);
+    }
+
+    .qs-dropzone.loaded .qs-label {
+      color: var(--green);
+    }
+
+    .qs-preview-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .qs-preview-stage {
+      width: 160px;
+      height: 174px;
+      display: none;
+      place-items: center;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background:
+        linear-gradient(45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(-45deg, #1b1e25 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1b1e25 75%),
+        linear-gradient(-45deg, transparent 75%, #1b1e25 75%),
+        #111318;
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      overflow: hidden;
+    }
+
+    .qs-preview-stage.visible {
+      display: grid;
+    }
+
+    .qs-preview-stage canvas {
+      image-rendering: auto;
+      filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
+    }
+
+    .qs-no-preview {
+      width: 160px;
+      height: 100px;
+      display: grid;
+      place-items: center;
+      color: var(--quiet);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .qs-spawn-btn {
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #37d7cf, #35d9bf);
+      color: #061112;
+      font-size: 15px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+
+    .qs-spawn-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      background: var(--panel-2);
+      color: var(--quiet);
+    }
+
+    .qs-spawn-btn:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(72, 215, 210, 0.25);
+    }
+
+    .qs-spawn-btn:not(:disabled):active {
+      transform: translateY(0);
+    }
+
+    @keyframes qsPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(72, 215, 210, 0); }
+      50% { box-shadow: 0 0 20px 4px rgba(72, 215, 210, 0.18); }
+    }
+
+    .qs-spawn-btn.ready {
+      animation: qsPulse 2s ease-in-out infinite;
+    }
+
+    .canvas-cache {
+      display: none;
+    }
+
+    .advanced-tools,
+    .advanced-panel {
+      display: none;
+    }
+
+    body.show-advanced .advanced-tools,
+    body.show-advanced .advanced-panel {
+      display: block;
+    }
+
+    body.show-advanced .workspace {
+      grid-template-columns: 360px minmax(480px, 1fr) 400px;
+    }
+
+    @media (max-width: 1180px) {
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .topbar {
+        flex-wrap: wrap;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-flow {
+        order: 3;
+        width: 100%;
+        flex-basis: 100%;
+        min-width: 0;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .flow-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .panel {
+        overflow: visible;
+      }
+
+      .quick-grid {
+        grid-template-columns: 1fr;
+      }
+
+      body.show-advanced .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .flow-cards,
+      .flow-preview-mini {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-intro {
+        padding: 32px 18px 28px;
+      }
+
+      .flow-input {
+        min-height: 62px;
+        font-size: 22px;
+      }
+
+      .flow-textarea {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .top-actions {
+        flex: 1 1 300px;
+        min-width: 0;
+      }
+
+      .top-actions #spawn-pet-btn,
+      .top-actions #package-status {
+        display: none;
+      }
+
+      .topbar-flow {
+        gap: 8px;
+      }
+
+      .topbar-step {
+        gap: 6px;
+      }
+
+      .topbar-flow .rule {
+        width: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div class="title">
+          <h1>Lamuh Pets</h1>
+          <span>Pet Hatch Studio</span>
+        </div>
+      </div>
+      <nav class="topbar-flow" aria-label="Onboarding steps">
+        <span class="topbar-step active" data-flow-nav="describe"><span class="step-dot">1</span>Describe</span>
+        <span class="rule"></span>
+        <span class="topbar-step" data-flow-nav="character"><span class="step-dot">2</span>Character</span>
+        <span class="rule"></span>
+        <span class="topbar-step" data-flow-nav="idle"><span class="step-dot">3</span>Idle</span>
+        <span class="rule"></span>
+        <span class="topbar-step" data-flow-nav="movement"><span class="step-dot">4</span>Movement</span>
+        <span class="rule"></span>
+        <span class="topbar-step" data-flow-nav="preview"><span class="step-dot">5</span>Preview</span>
+        <span class="rule"></span>
+        <span class="topbar-step" data-flow-nav="spawn"><span class="step-dot">6</span>Spawn</span>
+      </nav>
+      <div class="top-actions">
+        <span class="pill" id="api-status"><span class="dot warn"></span>Checking API</span>
+        <span class="pill" id="package-status"><span class="dot"></span>No package</span>
+        <button id="spawn-pet-btn" class="primary" disabled>Spawn pet</button>
+        <button id="advanced-toggle-btn">Advanced</button>
+        <button id="load-sample-btn">Try sample</button>
+        <button id="export-json-btn" class="advanced-tools" disabled>pet.json</button>
+        <button id="export-webp-btn" class="good advanced-tools" disabled>spritesheet.webp</button>
+      </div>
+    </header>
+
+    <section class="flow-strip" aria-label="Pet onboarding flow">
+      <div class="flow-intro">
+        <div class="flow-context" id="flow-context" hidden>
+          <strong id="flow-context-name">Nova</strong>
+          <span id="flow-context-description">A floating cyan robot wizard with a hooded shell</span>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="describe">
+          <p class="flow-eyebrow">Step 1 of 6</p>
+          <h2>What's your pet <em>called?</em></h2>
+          <p>Give it a name and tell us what it looks like. One sentence is enough, then the working sprite pipeline takes over.</p>
+          <div class="flow-form">
+            <div class="flow-field">
+              <label for="flow-pet-name">Pet name</label>
+              <input class="flow-input" id="flow-pet-name" value="Nova" spellcheck="false">
+            </div>
+            <div class="flow-field">
+              <div class="flow-label-row">
+                <label for="flow-pet-description">Describe it</label>
+                <span id="flow-description-count">48 chars</span>
+              </div>
+              <textarea class="flow-textarea" id="flow-pet-description" spellcheck="true">A floating cyan robot wizard with a hooded shell</textarea>
+            </div>
+            <div class="flow-suggestions">
+              <span>Try:</span>
+              <button class="flow-chip" type="button" data-flow-example="A floating cyan robot wizard with a hooded shell">A floating cyan robot wizard with a hooded shell</button>
+              <button class="flow-chip" type="button" data-flow-example="A tiny pixel cat with star-shaped eyes">A tiny pixel cat with star-shaped eyes</button>
+              <button class="flow-chip" type="button" data-flow-example="A glowing mushroom sprite with mossy boots">A glowing mushroom sprite with mossy boots</button>
+              <button class="flow-chip" type="button" data-flow-example="A retro game-boy ghost with green pixels">A retro game-boy ghost with green pixels</button>
+            </div>
+          </div>
+          <div class="flow-divider"></div>
+          <div class="flow-footer">
+            <button id="flow-to-character-btn" class="flow-next" type="button">Make my pet <span aria-hidden="true">-></span></button>
+          </div>
+
+          <div class="quick-spawn-shortcut" id="quick-spawn-shortcut">
+            <h3>⚡ Quick Spawn — Already have a spritesheet?</h3>
+            <p>Drop your finished 12×8 spritesheet here to skip the entire workflow and launch your desktop pet instantly.</p>
+            <div class="qs-layout">
+              <div>
+                <div class="qs-dropzone" id="qs-dropzone">
+                  <span class="qs-icon">📁</span>
+                  <span class="qs-label"><strong>Click</strong> or drag your spritesheet here</span>
+                  <input type="file" id="qs-file-input" accept="image/png,image/jpeg,image/webp" style="display:none">
+                </div>
+                <button class="qs-spawn-btn" id="qs-spawn-btn" disabled type="button">Drop a spritesheet first</button>
+              </div>
+              <div class="qs-preview-box">
+                <div class="qs-preview-stage" id="qs-preview-stage">
+                  <canvas id="qs-preview-canvas" width="192" height="208"></canvas>
+                </div>
+                <div class="qs-no-preview" id="qs-no-preview">Preview appears<br>after import</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="character" hidden>
+          <p class="flow-eyebrow">Step 2 of 6</p>
+          <h2>Create the <em>character</em></h2>
+          <p>Use cloud image AI through the prompt workflow, import a finished base image, or load the known-good sample so the sprite workflow has a clean identity lock.</p>
+          <div class="flow-cards">
+            <article class="flow-card" id="flow-step-character">
+              <header><strong>Character image</strong><span class="pill" id="flow-character-status"><span class="dot"></span>Needed</span></header>
+              <p>Generate or import one clean full-body reference image.</p>
+              <div class="button-row">
+                <button id="flow-character-make" class="primary" type="button">Base prompt</button>
+                <button id="flow-character-import" type="button">Import</button>
+              </div>
+            </article>
+            <article class="flow-card">
+              <header><strong>Working sample</strong><span class="pill"><span class="dot ok"></span>Safe</span></header>
+              <p>Load Lamuh's validated sample atlas to prove the pipeline still works.</p>
+              <div class="button-row">
+                <button id="flow-sample-btn" class="primary" type="button">Load sample</button>
+              </div>
+            </article>
+            <article class="flow-card">
+              <header><strong>Full studio</strong><span class="pill"><span class="dot"></span>Optional</span></header>
+              <p>Open the full form below for advanced imports, atlas work, and all rows.</p>
+              <div class="button-row">
+                <button id="flow-advanced-btn" type="button">Show full workflow</button>
+              </div>
+            </article>
+          </div>
+          <div class="flow-footer">
+            <button data-flow-back="describe" type="button">Back</button>
+            <button data-flow-next="idle" class="flow-next" type="button">Next: idle <span aria-hidden="true">-></span></button>
+          </div>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="idle" hidden>
+          <p class="flow-eyebrow">Step 3 of 6</p>
+          <h2>Generate the <em>idle</em></h2>
+          <p>Idle is the anchor row. Make this first so the pet has a stable personality before the running rows try to move it.</p>
+          <div class="flow-cards">
+            <article class="flow-card" id="flow-step-idle">
+              <header><strong>Idle row</strong><span class="pill" id="flow-idle-status"><span class="dot"></span>Needed</span></header>
+              <p>Create or import one 8-slot idle row with the character centered in each active frame.</p>
+              <div class="button-row">
+                <button id="flow-idle-make" class="primary" type="button">Idle prompt</button>
+                <button id="flow-idle-import" type="button">Import</button>
+              </div>
+            </article>
+            <article class="flow-card">
+              <header><strong>Working sample</strong><span class="pill"><span class="dot ok"></span>Safe</span></header>
+              <p>Load the validated sample if you want to test the rest of the workflow instantly.</p>
+              <div class="button-row">
+                <button id="flow-idle-sample-btn" type="button">Load sample</button>
+              </div>
+            </article>
+          </div>
+          <div class="flow-footer">
+            <button data-flow-back="character" type="button">Back</button>
+            <button data-flow-next="movement" class="flow-next" type="button">Next: movement <span aria-hidden="true">-></span></button>
+          </div>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="movement" hidden>
+          <p class="flow-eyebrow">Step 4 of 6</p>
+          <h2>Add left and right <em>movement</em></h2>
+          <p>Make running right and running left separately. Keeping them split makes prompts cleaner, imports easier, and validation less weird.</p>
+          <div class="flow-cards">
+            <article class="flow-card" id="flow-step-run-right">
+              <header><strong>Run right</strong><span class="pill" id="flow-run-right-status"><span class="dot"></span>Needed</span></header>
+              <p>Create or import the right-facing run row only.</p>
+              <div class="button-row">
+                <button id="flow-run-right-make" class="primary" type="button">Right prompt</button>
+                <button id="flow-run-right-import" type="button">Import</button>
+              </div>
+            </article>
+            <article class="flow-card" id="flow-step-run-left">
+              <header><strong>Run left</strong><span class="pill" id="flow-run-left-status"><span class="dot"></span>Needed</span></header>
+              <p>Create or import the left-facing run row only.</p>
+              <div class="button-row">
+                <button id="flow-run-left-make" class="primary" type="button">Left prompt</button>
+                <button id="flow-run-left-import" type="button">Import</button>
+              </div>
+            </article>
+            <article class="flow-card" id="flow-step-validate">
+              <header><strong>Validation</strong><span class="pill" id="flow-validate-status"><span class="dot"></span>Waiting</span></header>
+              <p>Check clipping, missing frames, empty slots, and row consistency after each import.</p>
+              <div class="button-row">
+                <button id="flow-validate-btn" type="button">Validate</button>
+              </div>
+            </article>
+            <article class="flow-card">
+              <header><strong>All animation rows</strong><span class="pill"><span class="dot"></span>Advanced</span></header>
+              <p>Use the full workflow for waving, jumping, failed, waiting, running, and review.</p>
+              <div class="button-row">
+                <button id="flow-show-all-btn" type="button">Show rows</button>
+              </div>
+            </article>
+          </div>
+          <div class="flow-footer">
+            <button data-flow-back="idle" type="button">Back</button>
+            <button data-flow-next="preview" class="flow-next" type="button">Next: preview <span aria-hidden="true">-></span></button>
+          </div>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="preview" hidden>
+          <p class="flow-eyebrow">Step 5 of 6</p>
+          <h2>Preview and <em>validate</em></h2>
+          <p>Build the current rows into the canonical atlas and inspect the live pet preview below. The app preserves the 192x208 cell contract.</p>
+          <div class="flow-preview-mini">
+            <div class="flow-preview-canvas"><canvas id="flow-preview-canvas" width="192" height="208"></canvas></div>
+            <div>
+              <div class="meter-grid">
+                <div class="meter"><strong id="flow-rows-ready">0</strong><span>Rows ready</span></div>
+                <div class="meter"><strong id="flow-error-count">0</strong><span>Errors</span></div>
+                <div class="meter"><strong id="flow-warning-count">0</strong><span>Warnings</span></div>
+              </div>
+              <div class="button-row" style="margin-top: 14px;">
+                <button id="flow-build-btn" class="primary" type="button">Build pet</button>
+                <button data-flow-next="spawn" type="button">Continue</button>
+              </div>
+            </div>
+          </div>
+          <div class="flow-footer">
+            <button data-flow-back="movement" type="button">Back</button>
+            <button data-flow-next="spawn" class="flow-next" type="button">Next: spawn <span aria-hidden="true">-></span></button>
+          </div>
+        </div>
+
+        <div class="flow-panel" data-flow-panel="spawn" hidden>
+          <p class="flow-eyebrow">Step 6 of 6</p>
+          <h2>Spawn your <em>pet</em></h2>
+          <p>Export the validated atlas package or launch it as a desktop pet. Agent brain controls stay safety-gated.</p>
+          <div class="flow-cards">
+            <article class="flow-card" id="flow-step-spawn">
+              <header><strong>Spawn status</strong><span class="pill" id="flow-spawn-status"><span class="dot"></span>Locked</span></header>
+              <p>Unlocked after the core animation rows are ready.</p>
+              <div class="button-row">
+                <button id="flow-spawn-btn" class="primary" type="button" disabled>Spawn</button>
+                <button id="flow-export-btn" type="button" disabled>Export</button>
+              </div>
+            </article>
+            <article class="flow-card">
+              <header><strong>Agent brain</strong><span class="pill"><span class="dot ok"></span>Gemini/local ready</span></header>
+              <p>Chat, vision, and browser actions remain permissioned and separate from image generation.</p>
+            </article>
+            <article class="flow-card">
+              <header><strong>Full studio</strong><span class="pill"><span class="dot"></span>Open</span></header>
+              <p>Use the editor below to refine imports, row prompts, FPS, and package exports.</p>
+              <div class="button-row">
+                <button id="flow-scroll-studio-btn" type="button">Go to studio</button>
+              </div>
+            </article>
+          </div>
+          <div class="flow-footer">
+            <button data-flow-back="preview" type="button">Back</button>
+            <button id="flow-start-over-btn" type="button">Start over</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="workspace">
+      <aside class="panel">
+        <section class="section advanced-tools">
+          <div class="section-title">
+            <h2>Character look</h2>
+            <span class="pill" id="mode-pill">New pet</span>
+          </div>
+          <div class="segmented" role="group" aria-label="Creation mode">
+            <button id="new-pet-mode" class="active" type="button">New pet</button>
+            <button id="skin-mode" type="button">Skin</button>
+          </div>
+          <div class="field" style="margin-top: 12px;">
+            <label for="pet-name">Name</label>
+            <input id="pet-name" value="Nova" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="pet-description">Describe your pet</label>
+            <textarea id="pet-description" spellcheck="true">A compact floating robot wizard with a cyan face display, dark braided shell-like hood, tiny hover body, and bright blue accent lights.</textarea>
+          </div>
+          <div class="field advanced-tools">
+            <label for="style-notes">Style lock</label>
+            <textarea id="style-notes" spellcheck="true">Codex-style digital pet, compact chibi proportions, chunky readable silhouette, thick dark pixel-adjacent outline, flat cel shading, tiny limbs, simple expressive face, solid magenta chroma key background.</textarea>
+          </div>
+          <div class="button-row">
+            <button id="generate-base-btn" class="primary">Base prompt</button>
+            <button id="base-prompt-btn">Show prompt</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h3>Imported character</h3>
+            <button id="import-base-btn">Import image</button>
+          </div>
+          <div class="base-box">
+            <div class="base-preview" id="base-preview"></div>
+            <div class="base-copy" id="base-copy">No character image yet. Generate one here or bring one back from ChatGPT.</div>
+          </div>
+        </section>
+
+        <section class="section advanced-tools">
+          <div class="section-title">
+            <h3>Advanced import</h3>
+            <span class="pill">9-row core</span>
+          </div>
+          <div class="field">
+            <label for="image-size">API output size</label>
+            <select id="image-size">
+              <option value="1536x1024" selected>1536 x 1024 rows</option>
+              <option value="1024x1024">1024 x 1024 draft</option>
+            </select>
+          </div>
+          <div class="button-row">
+            <button id="make-core-btn" class="primary">Core prompts</button>
+            <button id="make-all-btn">All prompts</button>
+            <button id="copy-all-prompts-btn">Prompt pack</button>
+            <button id="import-atlas-btn">Import atlas</button>
+          </div>
+        </section>
+      </aside>
+
+      <section class="panel">
+        <div class="simple-preview">
+          <section class="section" style="margin-bottom: 0;">
+            <div class="section-title">
+              <h2>Your pet</h2>
+              <span class="pill" id="preview-state-pill">Idle</span>
+            </div>
+            <div class="pet-stage">
+              <canvas id="preview-canvas" width="192" height="208"></canvas>
+              <div class="preview-help">Preview updates as animations are added.</div>
+            </div>
+          </section>
+
+          <div class="preview-toolbar">
+            <select id="preview-state"></select>
+            <select id="preview-fps">
+              <option value="5">5 fps</option>
+              <option value="8">8 fps</option>
+              <option value="10" selected>10 fps</option>
+              <option value="14">14 fps</option>
+            </select>
+          </div>
+
+          <div class="meter-grid">
+            <div class="meter">
+              <strong id="rows-ready">0</strong>
+              <span>Rows ready</span>
+            </div>
+            <div class="meter">
+              <strong id="error-count">0</strong>
+              <span>Errors</span>
+            </div>
+            <div class="meter">
+              <strong id="warning-count">0</strong>
+              <span>Warnings</span>
+            </div>
+          </div>
+
+          <section class="section advanced-tools" style="margin-bottom: 0;">
+            <div class="section-title">
+              <h2>Core animations</h2>
+              <div class="button-row" style="width: auto;">
+                <button id="compose-btn" class="primary">Build pet</button>
+              </div>
+            </div>
+            <div class="quick-grid" id="quick-grid"></div>
+          </section>
+
+          <section class="section advanced-panel" style="margin-bottom: 0;">
+            <div class="section-title">
+              <h2>All animations</h2>
+              <div class="button-row" style="width: auto;">
+                <button id="validate-btn">Validate</button>
+              </div>
+            </div>
+            <div class="queue" id="row-queue"></div>
+          </section>
+
+          <section class="section" style="margin-bottom: 0;">
+            <div class="section-title">
+              <h3>Build Log</h3>
+              <button id="clear-log-btn">Clear</button>
+            </div>
+            <div class="log" id="build-log"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="prompt-drawer" id="prompt-drawer">
+    <div class="section-title">
+      <h3 id="prompt-title">Prompt</h3>
+      <button id="close-prompt-btn">Close</button>
+    </div>
+    <textarea id="prompt-text" readonly></textarea>
+    <div class="button-row">
+      <button id="copy-prompt-btn" class="primary">Copy prompt</button>
+      <button id="save-prompt-btn">Download .txt</button>
+    </div>
+  </div>
+
+  <input type="file" id="file-input" class="hidden-input" accept="image/png,image/jpeg,image/webp">
+  <canvas id="atlas-cache" class="canvas-cache" width="1536" height="1872"></canvas>
+
+  <script>
+    const CELL_W = 192;
+    const CELL_H = 208;
+    const COLS = 8;
+    const ROWS = 9;
+    const ATLAS_W = CELL_W * COLS;
+    const ATLAS_H = CELL_H * ROWS;
+    const SAMPLE_ATLAS = "interaction_import_pack/lamuh_extended_spritesheet_12x8.webp";
+    const CORE_STATE_IDS = ["idle", "running-right", "running-left"];
+    const QUICK_STATE_IDS = ["idle", "running-right", "running-left", "waving"];
+    const LAMUH_SAMPLE_ROW_MAP = {
+      idle: 7,
+      "running-right": 1,
+      "running-left": 2,
+      waving: 3,
+      jumping: 4,
+      failed: 5,
+      waiting: 6,
+      running: 7,
+      review: 0
+    };
+    const DEFAULT_NAME = "Nova";
+    const DEFAULT_FLOW_DESCRIPTION = "A floating cyan robot wizard with a hooded shell";
+    const DEFAULT_DESCRIPTION = "A compact floating robot wizard with a cyan face display, dark braided shell-like hood, tiny hover body, and bright blue accent lights.";
+    const DEFAULT_STYLE_NOTES = "Codex-style digital pet, compact chibi proportions, chunky readable silhouette, thick dark pixel-adjacent outline, flat cel shading, tiny limbs, simple expressive face, solid magenta chroma key background.";
+
+    const STATES = [
+      {
+        id: "idle",
+        label: "Idle",
+        row: 0,
+        frames: 6,
+        action: "a calm breathing idle loop with tiny expression changes",
+        motionRule: "Idle stays centered. Body stays in place. Use only subtle breathing, blinks, or tiny expression shifts. Do NOT walk, jump, or run."
+      },
+      {
+        id: "running-right",
+        label: "Running Right",
+        row: 1,
+        frames: 8,
+        action: "a right-facing run cycle with body leaning right and tiny limbs moving",
+        motionRule: "The character must face SCREEN-RIGHT (looking toward the right edge) in every frame. Body leans rightward, limbs cycle through a right-facing run stride. Do NOT face left, do NOT face the camera, do NOT mirror this row."
+      },
+      {
+        id: "running-left",
+        label: "Running Left",
+        row: 2,
+        frames: 8,
+        action: "a left-facing run cycle with body leaning left and tiny limbs moving",
+        motionRule: "The character must face SCREEN-LEFT (looking toward the left edge) in every frame. Body leans leftward, limbs cycle through a left-facing run stride. Do NOT face right, do NOT face the camera, do NOT mirror this row."
+      },
+      {
+        id: "waving",
+        label: "Waving",
+        row: 3,
+        frames: 4,
+        action: "a friendly wave shown only through the paw or arm pose",
+        motionRule: "Waving uses the paw or arm pose only. Body and feet stay still and centered. Do NOT walk, do NOT jump."
+      },
+      {
+        id: "jumping",
+        label: "Jumping",
+        row: 4,
+        frames: 5,
+        action: "a vertical jump arc shown through body position only",
+        motionRule: "Jumping uses vertical body translation only (crouch down, take off, peak, fall, land). Character faces forward. Do NOT walk, do NOT add scenery or shadows."
+      },
+      {
+        id: "failed",
+        label: "Failed",
+        row: 5,
+        frames: 8,
+        action: "a small failed or dizzy reaction with any effects physically attached to the pet",
+        motionRule: "Failed reaction. Body wobbles, slumps, or shakes in place. Any stars, swirls, or sparkles must be small and physically attached to the pet, not floating detached effects."
+      },
+      {
+        id: "waiting",
+        label: "Waiting",
+        row: 6,
+        frames: 6,
+        action: "a patient waiting loop with a subtle blink or tiny fidget",
+        motionRule: "Waiting stays in place. Use a blink, tiny tail flick, or paw fidget only. Do NOT walk, do NOT jump."
+      },
+      {
+        id: "running",
+        label: "Running",
+        row: 7,
+        frames: 6,
+        action: "a front-facing running-in-place loop",
+        motionRule: "Running-in-place. Character faces the CAMERA (front view). Limbs move to suggest running but body stays centered in each cell. Do NOT face sideways."
+      },
+      {
+        id: "review",
+        label: "Review",
+        row: 8,
+        frames: 6,
+        action: "a focused review loop using lean, blink, head tilt, or paw position",
+        motionRule: "Review/inspect loop. Body stays centered. Use lean, blink, head tilt, or paw position only. Do NOT walk."
+      }
+    ];
+
+    const app = {
+      rows: new Map(),
+      baseDataUrl: "",
+      activeState: "idle",
+      frame: 0,
+      fps: 10,
+      health: null,
+      lastPrompt: "",
+      fileTarget: null,
+      referenceAnalysis: "",
+      referenceSource: "",
+      generatingBatch: false,
+      flowStep: "describe",
+      characterName: DEFAULT_NAME,
+      characterDescription: "",
+      logs: []
+    };
+
+    const el = {
+      apiStatus: document.getElementById("api-status"),
+      packageStatus: document.getElementById("package-status"),
+      modePill: document.getElementById("mode-pill"),
+      petName: document.getElementById("pet-name"),
+      description: document.getElementById("pet-description"),
+      styleNotes: document.getElementById("style-notes"),
+      basePreview: document.getElementById("base-preview"),
+      baseCopy: document.getElementById("base-copy"),
+      quickGrid: document.getElementById("quick-grid"),
+      rowQueue: document.getElementById("row-queue"),
+      previewState: document.getElementById("preview-state"),
+      previewStatePill: document.getElementById("preview-state-pill"),
+      previewFps: document.getElementById("preview-fps"),
+      previewCanvas: document.getElementById("preview-canvas"),
+      atlasCache: document.getElementById("atlas-cache"),
+      rowsReady: document.getElementById("rows-ready"),
+      errorCount: document.getElementById("error-count"),
+      warningCount: document.getElementById("warning-count"),
+      buildLog: document.getElementById("build-log"),
+      promptDrawer: document.getElementById("prompt-drawer"),
+      promptTitle: document.getElementById("prompt-title"),
+      promptText: document.getElementById("prompt-text"),
+      fileInput: document.getElementById("file-input"),
+      imageSize: document.getElementById("image-size"),
+      exportWebp: document.getElementById("export-webp-btn"),
+      exportJson: document.getElementById("export-json-btn"),
+      spawnPet: document.getElementById("spawn-pet-btn"),
+      flowName: document.getElementById("flow-pet-name"),
+      flowDescription: document.getElementById("flow-pet-description"),
+      flowDescriptionCount: document.getElementById("flow-description-count"),
+      flowContext: document.getElementById("flow-context"),
+      flowContextName: document.getElementById("flow-context-name"),
+      flowContextDescription: document.getElementById("flow-context-description"),
+      flowPanels: Array.from(document.querySelectorAll("[data-flow-panel]")),
+      flowNav: Array.from(document.querySelectorAll("[data-flow-nav]")),
+      flowStepCharacter: document.getElementById("flow-step-character"),
+      flowStepIdle: document.getElementById("flow-step-idle"),
+      flowStepRunRight: document.getElementById("flow-step-run-right"),
+      flowStepRunLeft: document.getElementById("flow-step-run-left"),
+      flowStepValidate: document.getElementById("flow-step-validate"),
+      flowStepSpawn: document.getElementById("flow-step-spawn"),
+      flowCharacterStatus: document.getElementById("flow-character-status"),
+      flowIdleStatus: document.getElementById("flow-idle-status"),
+      flowRunRightStatus: document.getElementById("flow-run-right-status"),
+      flowRunLeftStatus: document.getElementById("flow-run-left-status"),
+      flowValidateStatus: document.getElementById("flow-validate-status"),
+      flowSpawnStatus: document.getElementById("flow-spawn-status"),
+      flowSpawn: document.getElementById("flow-spawn-btn"),
+      flowExport: document.getElementById("flow-export-btn"),
+      flowPreviewCanvas: document.getElementById("flow-preview-canvas"),
+      flowRowsReady: document.getElementById("flow-rows-ready"),
+      flowErrorCount: document.getElementById("flow-error-count"),
+      flowWarningCount: document.getElementById("flow-warning-count")
+    };
+
+    function slugify(value) {
+      return (value || "custom-pet").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "custom-pet";
+    }
+
+    function isCoreReady() {
+      return CORE_STATE_IDS.every(id => app.rows.has(id));
+    }
+
+    function isPackageReady() {
+      return STATES.every(state => app.rows.has(state.id));
+    }
+
+    function canBuildPet() {
+      return isCoreReady();
+    }
+
+    function addLog(type, text) {
+      app.logs.unshift({ type, text, time: new Date().toLocaleTimeString() });
+      app.logs = app.logs.slice(0, 80);
+      renderLog();
+    }
+
+    function renderLog() {
+      el.buildLog.innerHTML = app.logs.map(item => {
+        const cls = item.type === "error" ? "err" : item.type === "warning" ? "warn" : item.type === "ok" ? "ok" : "";
+        return `<div class="log-entry"><span class="dot ${cls}"></span><span><strong>${item.time}</strong> ${escapeHtml(item.text)}</span></div>`;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function updateHealthChip() {
+      if (!app.health) return;
+      const dot = app.health.google_key_present ? "ok" : "warn";
+      const text = app.health.google_key_present ? "Google agent ready" : "Local mode";
+      el.apiStatus.innerHTML = `<span class="dot ${dot}"></span>${escapeHtml(text)}`;
+    }
+
+    function apiCanGenerate() {
+      return Boolean(app.health && app.health.image_generation_enabled);
+    }
+
+    async function fetchHealth() {
+      if (location.protocol === "file:") {
+        const serverUrl = "http://127.0.0.1:8787/pet_studio.html";
+        el.apiStatus.innerHTML = '<span class="dot warn"></span>Opening server';
+        addLog("warning", "The studio was opened from a file. Spawn needs the local server, so I am switching to localhost.");
+        setTimeout(() => { location.href = serverUrl; }, 500);
+        return;
+      }
+      try {
+        const res = await fetch("/api/health");
+        app.health = await res.json();
+        updateHealthChip();
+        addLog("info", app.health.note || "Server is ready.");
+      } catch (error) {
+        app.health = { ok: false, google_key_present: false };
+        el.apiStatus.innerHTML = '<span class="dot warn"></span>Static mode';
+        addLog("warning", "Open the local server to spawn pets. Static preview still works.");
+      }
+    }
+
+    function displayName(rawName) {
+      const trimmed = (rawName || "").trim();
+      return trimmed || DEFAULT_NAME;
+    }
+
+    function displayDescription(rawDescription) {
+      const trimmed = (rawDescription || "").trim();
+      return trimmed || DEFAULT_FLOW_DESCRIPTION;
+    }
+
+    function setCharacterContext(name, description, source = "state") {
+      const rawName = name == null ? "" : String(name);
+      const rawDescription = description == null ? "" : String(description);
+      app.characterName = rawName;
+      app.characterDescription = rawDescription;
+
+      const showName = displayName(rawName);
+      const showDescription = displayDescription(rawDescription);
+
+      el.flowDescriptionCount.textContent = `${rawDescription.length} chars`;
+      el.flowContextName.textContent = showName;
+      el.flowContextDescription.textContent = showDescription;
+
+      const writeWizard = source === "studio" || source === "all";
+      const writeStudio = source === "wizard" || source === "all";
+
+      if (writeWizard) {
+        if (el.flowName.value !== rawName) el.flowName.value = rawName;
+        if (el.flowDescription.value !== rawDescription) el.flowDescription.value = rawDescription;
+      }
+      if (writeStudio) {
+        if (el.petName.value !== rawName) el.petName.value = rawName;
+        if (el.description.value !== rawDescription) el.description.value = rawDescription;
+      }
+
+      return { name: showName, description: showDescription };
+    }
+
+    function captureCharacterContext(source = "state") {
+      if (source === "wizard") return setCharacterContext(el.flowName.value, el.flowDescription.value, "wizard");
+      if (source === "studio") return setCharacterContext(el.petName.value, el.description.value, "studio");
+      return setCharacterContext(app.characterName, app.characterDescription, "state");
+    }
+
+    function typedDescription() {
+      return captureCharacterContext().description;
+    }
+
+    function hasOnlyDefaultDescription() {
+      const raw = (app.characterDescription || "").trim();
+      if (!raw) return true;
+      if (raw === DEFAULT_DESCRIPTION) return true;
+      if (raw === DEFAULT_FLOW_DESCRIPTION) return true;
+      return raw.startsWith("Uploaded reference image");
+    }
+
+    function petIdentityText() {
+      const typed = typedDescription();
+      if (app.referenceAnalysis && typed && typed !== app.referenceAnalysis && typed !== DEFAULT_DESCRIPTION) {
+        return `${typed}\nReference analysis: ${app.referenceAnalysis}`;
+      }
+      return app.referenceAnalysis || typed || "the same compact digital pet";
+    }
+
+    function basePrompt() {
+      const context = captureCharacterContext();
+      const styleLock = (el.styleNotes && el.styleNotes.value.trim()) || DEFAULT_STYLE_NOTES;
+      return [
+        "Create ONE canonical reference image for a desktop digital pet.",
+        `Pet name: ${context.name}.`,
+        `Pet identity (use this exact description): ${context.description}.`,
+        `Style: ${styleLock}.`,
+        "Composition: one full-body character centered, no grid, no text, no UI, no scenery, no shadow, no glow.",
+        "Background: solid #ff00ff magenta chroma key only.",
+        "The character must have a compact readable silhouette, simple face, tiny limbs, and details large enough to survive at 192x208 pixels.",
+        "Do NOT create a sprite sheet, animation row, or multiple poses in this step. This is a single full-body reference image only."
+      ].join("\n");
+    }
+
+    function rowPrompt(state) {
+      const context = captureCharacterContext();
+      const remaining = COLS - state.frames;
+      const emptyText = remaining > 0 ? `Leave the final ${remaining} slots empty magenta.` : "Use all 8 slots.";
+      return [
+        `Using the attached canonical base character as the identity lock, create ONE horizontal "${state.label}" animation row for a desktop pet spritesheet.`,
+        "Critical output rule: create ONE ROW ONLY, not a full spritesheet, not multiple rows, not a character pose sheet.",
+        "Canvas/layout target: a wide horizontal strip with 8 equal slots, ideally 1536x208 pixels or the same 8:1 aspect ratio.",
+        "Attach the base character image you generated/imported earlier. That image is the source of truth for who this character is.",
+        "First inspect the attached reference image and preserve its actual silhouette, palette, face, markings, accessories, proportions, and asymmetry.",
+        `Pet name: ${context.name}.`,
+        `Pet identity to preserve exactly: ${petIdentityText()}`,
+        `Animation state: ${state.label}. Action: ${state.action}.`,
+        `Motion rule for ${state.label}: ${state.motionRule}`,
+        `Output layout: 8 equal horizontal slots, ONE row only. Make exactly ${state.frames} active poses from left to right. ${emptyText}`,
+        "Each active pose must be a complete full-body sprite centered in its own slot with safe padding.",
+        "Style: compact chibi digital pet, chunky readable silhouette, thick dark pixel-adjacent outline, flat cel shading, simple expressive face, tiny limbs.",
+        "Background: solid #ff00ff magenta chroma key only. No transparency checkerboard.",
+        "Forbidden: text, labels, frame numbers, visible grid lines, scenery, floor, shadows, detached effects, stray color shards, leftover slivers, speed lines, wave marks, motion blur, duplicate overlapping poses, cropped body parts.",
+        `Do NOT generate any other animation state in this image. This row is ONLY ${state.label}.`
+      ].join("\n");
+    }
+
+    function manualPromptForStates(states) {
+      if (!app.baseDataUrl) {
+        return {
+          title: "Step 1: make the base character",
+          text: [
+            "Use this prompt first. Do not ask the image model for animation yet.",
+            "",
+            basePrompt()
+          ].join("\n")
+        };
+      }
+
+      const nextState = states.find(state => !app.rows.has(state.id)) || states[0];
+      const index = states.findIndex(state => state.id === nextState.id) + 1;
+      return {
+        title: `${nextState.label} row prompt (${Math.max(index, 1)} of ${states.length})`,
+        text: [
+          "Use this prompt by itself with the base character image attached.",
+          "Do not paste the full prompt pack into an image model. Generate/import one row, then come back for the next row.",
+          "",
+          rowPrompt(nextState)
+        ].join("\n")
+      };
+    }
+
+    function showManualPromptForStates(states) {
+      const manual = manualPromptForStates(states);
+      showPrompt(manual.title, manual.text);
+    }
+
+    function allPrompts() {
+      const context = captureCharacterContext();
+      return [
+        "# Manual generation warning",
+        "These prompts are for reference only. Paste ONE prompt at a time into your image model. If you paste the entire pack, most image models will create an unusable full spritesheet.",
+        "",
+        "# Locked character context",
+        `Pet name: ${context.name}`,
+        `Pet identity: ${context.description}`,
+        "",
+        "# Base",
+        basePrompt(),
+        "",
+        ...STATES.flatMap(state => [`# Row ${state.row}: ${state.label}`, rowPrompt(state), ""])
+      ].join("\n");
+    }
+
+    function showPrompt(title, text) {
+      app.lastPrompt = text;
+      el.promptTitle.textContent = title;
+      el.promptText.value = text;
+      el.promptText.dataset.currentPrompt = text;
+      el.promptDrawer.classList.add("open");
+      el.promptText.focus();
+      el.promptText.select();
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        addLog("ok", "Copied prompt to clipboard.");
+      } catch {
+        el.promptText.focus();
+        el.promptText.select();
+        document.execCommand("copy");
+        addLog("ok", "Copied prompt to clipboard.");
+      }
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const [header, encoded] = dataUrl.split(",");
+      const mime = (header.match(/data:(.*?);/) || [null, "image/png"])[1];
+      const bytes = atob(encoded);
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    function imageFromSrc(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function makeCanvas(width, height) {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      return canvas;
+    }
+
+    function estimateBg(data, width, height) {
+      const samples = [];
+      const points = [
+        [2, 2],
+        [width - 3, 2],
+        [2, height - 3],
+        [width - 3, height - 3],
+        [Math.floor(width / 2), 2],
+        [Math.floor(width / 2), height - 3]
+      ];
+      for (const [x, y] of points) {
+        const idx = (Math.max(0, Math.min(height - 1, y)) * width + Math.max(0, Math.min(width - 1, x))) * 4;
+        samples.push([data[idx], data[idx + 1], data[idx + 2], data[idx + 3]]);
+      }
+      const sum = samples.reduce((acc, p) => [acc[0] + p[0], acc[1] + p[1], acc[2] + p[2], acc[3] + p[3]], [0, 0, 0, 0]);
+      return sum.map(v => Math.round(v / samples.length));
+    }
+
+    function dist(r, g, b, color) {
+      return Math.abs(r - color[0]) + Math.abs(g - color[1]) + Math.abs(b - color[2]);
+    }
+
+    function isBackground(r, g, b, a, bg) {
+      if (a < 18) return true;
+      if (dist(r, g, b, bg) < 66) return true;
+      if (dist(r, g, b, [255, 0, 255]) < 105) return true;
+      if (dist(r, g, b, [0, 255, 0]) < 90) return true;
+      if (bg[0] > 225 && bg[1] > 225 && bg[2] > 225 && r > 225 && g > 225 && b > 225) return true;
+      return false;
+    }
+
+    function trimBox(canvas) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const { width, height } = canvas;
+      const image = ctx.getImageData(0, 0, width, height);
+      const bg = estimateBg(image.data, width, height);
+      let minX = width, minY = height, maxX = -1, maxY = -1;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4;
+          const r = image.data[idx];
+          const g = image.data[idx + 1];
+          const b = image.data[idx + 2];
+          const a = image.data[idx + 3];
+          if (!isBackground(r, g, b, a, bg)) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+      if (maxX < minX || maxY < minY) return null;
+      return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, bg };
+    }
+
+    function cleanBackground(canvas, bg) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < image.data.length; i += 4) {
+        const r = image.data[i];
+        const g = image.data[i + 1];
+        const b = image.data[i + 2];
+        const a = image.data[i + 3];
+        if (isBackground(r, g, b, a, bg)) {
+          image.data[i + 3] = 0;
+        }
+      }
+      ctx.putImageData(image, 0, 0);
+    }
+
+    function alphaComponents(canvas) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const { width, height } = canvas;
+      const image = ctx.getImageData(0, 0, width, height);
+      const seen = new Uint8Array(width * height);
+      const components = [];
+      const queue = [];
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const start = y * width + x;
+          if (seen[start] || image.data[start * 4 + 3] <= 18) continue;
+          let minX = x, maxX = x, minY = y, maxY = y, area = 0;
+          queue.length = 0;
+          queue.push(start);
+          seen[start] = 1;
+
+          for (let qi = 0; qi < queue.length; qi++) {
+            const index = queue[qi];
+            const cx = index % width;
+            const cy = Math.floor(index / width);
+            area++;
+            if (cx < minX) minX = cx;
+            if (cx > maxX) maxX = cx;
+            if (cy < minY) minY = cy;
+            if (cy > maxY) maxY = cy;
+
+            const neighbors = [index + 1, index - 1, index + width, index - width];
+            for (const ni of neighbors) {
+              if (ni < 0 || ni >= width * height || seen[ni]) continue;
+              const nx = ni % width;
+              if ((index % width === 0 && nx === width - 1) || (index % width === width - 1 && nx === 0)) continue;
+              if (image.data[ni * 4 + 3] <= 18) continue;
+              seen[ni] = 1;
+              queue.push(ni);
+            }
+          }
+
+          components.push({ x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, area });
+        }
+      }
+
+      return components.sort((a, b) => b.area - a.area);
+    }
+
+    function boxesNear(a, b, pad = 10) {
+      return !(
+        a.x + a.w + pad < b.x ||
+        b.x + b.w + pad < a.x ||
+        a.y + a.h + pad < b.y ||
+        b.y + b.h + pad < a.y
+      );
+    }
+
+    function removeDetachedArtifacts(canvas) {
+      const components = alphaComponents(canvas);
+      if (components.length <= 1) return 0;
+      const main = components[0];
+      const minKeepArea = Math.max(120, main.area * 0.025);
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let removed = 0;
+
+      for (const component of components.slice(1)) {
+        const thinShard = component.w <= 6 || component.h <= 6 || component.area < minKeepArea;
+        const detached = !boxesNear(component, main, 12);
+        if (!thinShard || !detached) continue;
+        for (let y = component.y; y < component.y + component.h; y++) {
+          for (let x = component.x; x < component.x + component.w; x++) {
+            const idx = (y * canvas.width + x) * 4;
+            if (image.data[idx + 3] > 18) image.data[idx + 3] = 0;
+          }
+        }
+        removed++;
+      }
+
+      if (removed) ctx.putImageData(image, 0, 0);
+      return removed;
+    }
+
+    function trimAlphaBox(canvas) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let minX = canvas.width, minY = canvas.height, maxX = -1, maxY = -1, pixels = 0;
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          if (image.data[(y * canvas.width + x) * 4 + 3] <= 18) continue;
+          pixels++;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+      if (!pixels) return null;
+      return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, cx: (minX + maxX + 1) / 2, bottom: maxY + 1, pixels };
+    }
+
+    function stabilizeRowFrames(rowCanvas, state) {
+      const frames = [];
+      for (let col = 0; col < state.frames; col++) {
+        const frame = makeCanvas(CELL_W, CELL_H);
+        frame.getContext("2d").drawImage(rowCanvas, col * CELL_W, 0, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+        const box = trimAlphaBox(frame);
+        if (box) frames.push({ col, frame, box });
+      }
+      if (frames.length < 2) return 0;
+
+      const sorted = frames.slice().sort((a, b) => a.box.pixels - b.box.pixels);
+      const mid = sorted[Math.floor(sorted.length / 2)].box;
+      const targetCx = mid.cx;
+      const targetBottom = mid.bottom;
+      const out = makeCanvas(ATLAS_W, CELL_H);
+      const outCtx = out.getContext("2d");
+      outCtx.clearRect(0, 0, ATLAS_W, CELL_H);
+      let moved = 0;
+
+      for (const item of frames) {
+        const dx = Math.round(targetCx - item.box.cx);
+        const dy = Math.round(targetBottom - item.box.bottom);
+        if (dx || dy) moved++;
+        outCtx.drawImage(item.frame, item.col * CELL_W + dx, dy);
+      }
+
+      const ctx = rowCanvas.getContext("2d");
+      ctx.clearRect(0, 0, ATLAS_W, CELL_H);
+      ctx.drawImage(out, 0, 0);
+      return moved;
+    }
+
+    function foregroundMask(canvas) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const bg = estimateBg(image.data, canvas.width, canvas.height);
+      const mask = new Uint8Array(canvas.width * canvas.height);
+      for (let y = 0; y < canvas.height; y++) {
+        for (let x = 0; x < canvas.width; x++) {
+          const idx = (y * canvas.width + x) * 4;
+          const r = image.data[idx];
+          const g = image.data[idx + 1];
+          const b = image.data[idx + 2];
+          const a = image.data[idx + 3];
+          if (!isBackground(r, g, b, a, bg)) mask[y * canvas.width + x] = 1;
+        }
+      }
+      return { mask, bg };
+    }
+
+    function findComponents(canvas) {
+      const { mask, bg } = foregroundMask(canvas);
+      const width = canvas.width;
+      const height = canvas.height;
+      const seen = new Uint8Array(width * height);
+      const components = [];
+      const queueX = [];
+      const queueY = [];
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const start = y * width + x;
+          if (!mask[start] || seen[start]) continue;
+          let minX = x, maxX = x, minY = y, maxY = y, area = 0;
+          queueX.length = 0;
+          queueY.length = 0;
+          queueX.push(x);
+          queueY.push(y);
+          seen[start] = 1;
+          for (let qi = 0; qi < queueX.length; qi++) {
+            const cx = queueX[qi];
+            const cy = queueY[qi];
+            area++;
+            if (cx < minX) minX = cx;
+            if (cx > maxX) maxX = cx;
+            if (cy < minY) minY = cy;
+            if (cy > maxY) maxY = cy;
+            const neighbors = [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]];
+            for (const [nx, ny] of neighbors) {
+              if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+              const ni = ny * width + nx;
+              if (!mask[ni] || seen[ni]) continue;
+              seen[ni] = 1;
+              queueX.push(nx);
+              queueY.push(ny);
+            }
+          }
+          const w = maxX - minX + 1;
+          const h = maxY - minY + 1;
+          if (area > 250 && w > 12 && h > 12) {
+            components.push({ x: minX, y: minY, w, h, area, bg });
+          }
+        }
+      }
+      return components.sort((a, b) => a.x - b.x);
+    }
+
+    function drawObjectIntoCell(outCtx, sourceCanvas, box, col) {
+      const object = makeCanvas(box.w, box.h);
+      object.getContext("2d").drawImage(sourceCanvas, box.x, box.y, box.w, box.h, 0, 0, box.w, box.h);
+      cleanBackground(object, box.bg);
+      const removedArtifacts = removeDetachedArtifacts(object);
+
+      const padX = 8;
+      const padY = 6;
+      const scale = Math.min((CELL_W - padX * 2) / box.w, (CELL_H - padY * 2) / box.h);
+      const dw = Math.max(1, Math.round(box.w * scale));
+      const dh = Math.max(1, Math.round(box.h * scale));
+      const dx = col * CELL_W + Math.round((CELL_W - dw) / 2);
+      const dy = Math.round((CELL_H - dh) / 2);
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.drawImage(object, 0, 0, box.w, box.h, dx, dy, dw, dh);
+      return removedArtifacts;
+    }
+
+    function normalizeRowFromImage(img, state) {
+      const out = makeCanvas(ATLAS_W, CELL_H);
+      const outCtx = out.getContext("2d");
+      outCtx.clearRect(0, 0, out.width, out.height);
+
+      const source = makeCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+      const sctx = source.getContext("2d");
+      sctx.drawImage(img, 0, 0, source.width, source.height);
+
+      const warnings = [];
+      const active = state.frames;
+      const components = findComponents(source)
+        .filter(component => component.w < source.width * 0.62 && component.h < source.height * 0.94)
+        .sort((a, b) => b.area - a.area)
+        .slice(0, active)
+        .sort((a, b) => a.x - b.x);
+      let removedArtifacts = 0;
+
+      if (components.length >= active) {
+        components.forEach((component, col) => {
+          removedArtifacts += drawObjectIntoCell(outCtx, source, component, col);
+        });
+        warnings.push(`${state.label} was centered with component detection.`);
+      } else {
+        warnings.push(`${state.label} used equal-slot slicing because only ${components.length}/${active} poses were detected.`);
+
+        for (let col = 0; col < active; col++) {
+          const sx = Math.round(col * source.width / COLS);
+          const sx2 = Math.round((col + 1) * source.width / COLS);
+          const sw = Math.max(1, sx2 - sx);
+          const temp = makeCanvas(sw, source.height);
+          temp.getContext("2d").drawImage(source, sx, 0, sw, source.height, 0, 0, sw, source.height);
+          const box = trimBox(temp);
+          if (!box) {
+            warnings.push(`${state.label} frame ${col + 1} looks empty.`);
+            continue;
+          }
+          removedArtifacts += drawObjectIntoCell(outCtx, temp, box, col);
+        }
+      }
+      if (removedArtifacts) warnings.push(`${state.label} removed ${removedArtifacts} tiny detached artifact${removedArtifacts === 1 ? "" : "s"}.`);
+      const stabilized = stabilizeRowFrames(out, state);
+      if (stabilized) warnings.push(`${state.label} stabilized ${stabilized} frame${stabilized === 1 ? "" : "s"} to reduce idle/run jitter.`);
+
+      const validation = validateRowCanvas(out, state);
+      validation.warnings.push(...warnings);
+      validation.ok = validation.errors.length === 0;
+      return { canvas: out, validation };
+    }
+
+    function validateRowCanvas(canvas, state) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      const errors = [];
+      const warnings = [];
+      const frames = [];
+
+      for (let col = 0; col < COLS; col++) {
+        const image = ctx.getImageData(col * CELL_W, 0, CELL_W, CELL_H);
+        let count = 0;
+        let edge = 0;
+        for (let y = 0; y < CELL_H; y++) {
+          for (let x = 0; x < CELL_W; x++) {
+            const a = image.data[(y * CELL_W + x) * 4 + 3];
+            if (a > 18) {
+              count++;
+              if (x < 2 || y < 2 || x > CELL_W - 3 || y > CELL_H - 3) edge++;
+            }
+          }
+        }
+        const shouldUse = col < state.frames;
+        frames.push({ column: col, pixels: count, edge });
+        if (shouldUse && count < 350) errors.push(`${state.label} frame ${col + 1} is empty or too small.`);
+        if (shouldUse && edge > 0) warnings.push(`${state.label} frame ${col + 1} touches the cell edge.`);
+        if (!shouldUse && count > 0) warnings.push(`${state.label} unused slot ${col + 1} is not empty.`);
+      }
+
+      return { ok: errors.length === 0, errors, warnings, frames };
+    }
+
+    function storeRow(state, canvas, validation, source) {
+      app.rows.set(state.id, { canvas, validation, source, updatedAt: Date.now() });
+      addLog(validation.ok ? "ok" : "warning", `${state.label} row imported from ${source}.`);
+      renderRows();
+      renderQuickCards();
+      updateMetrics();
+      drawPreview(true);
+    }
+
+    function fallbackReferenceAnalysis(source) {
+      const clean = (source || "uploaded reference")
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      return `Uploaded reference image${clean ? ` named ${clean}` : ""}. Use the attached image itself as the visual source of truth and preserve its silhouette, colors, face, accessories, markings, proportions, and asymmetry exactly.`;
+    }
+
+    async function analyzeBaseReference(dataUrl, source) {
+      app.referenceSource = source;
+      app.referenceAnalysis = "";
+      const importedByUser = source !== "OpenAI API";
+
+      if (!apiCanGenerate()) {
+        if (importedByUser) {
+          app.referenceAnalysis = fallbackReferenceAnalysis(source);
+          if (hasOnlyDefaultDescription()) {
+            setCharacterContext(app.characterName, app.referenceAnalysis, "all");
+          }
+          el.baseCopy.textContent = `${source} is locked. Attach this image when using copied prompts.`;
+        } else {
+          el.baseCopy.textContent = `${source} is now the identity lock for row generation.`;
+        }
+        renderQuickCards();
+        return;
+      }
+
+      if (importedByUser && hasOnlyDefaultDescription()) {
+        setCharacterContext(app.characterName, fallbackReferenceAnalysis(source), "all");
+      }
+
+      try {
+        const res = await fetch("/api/analyze-reference", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ referenceImage: dataUrl, sourceName: source })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.message || data.error || "Reference analysis failed");
+        app.referenceAnalysis = data.analysis.trim();
+        if (hasOnlyDefaultDescription() || (app.characterDescription || "").startsWith("Uploaded reference image")) {
+          setCharacterContext(app.characterName, app.referenceAnalysis, "all");
+        }
+        el.baseCopy.textContent = `${source} analyzed and locked for row generation.`;
+        addLog("ok", "Reference image analyzed. Animation prompts now match this character.");
+      } catch (error) {
+        app.referenceAnalysis = importedByUser ? fallbackReferenceAnalysis(source) : "";
+        if (importedByUser && (app.characterDescription || "").startsWith("Uploaded reference image")) {
+          setCharacterContext(app.characterName, app.referenceAnalysis, "all");
+        }
+        el.baseCopy.textContent = importedByUser
+          ? `${source} is locked. Attach this image when using copied prompts.`
+          : `${source} is now the identity lock for row generation.`;
+        addLog("warning", `Vision analysis skipped: ${error.message}`);
+      }
+
+      renderQuickCards();
+    }
+
+    async function importBaseFromDataUrl(dataUrl, source) {
+      app.baseDataUrl = dataUrl;
+      el.basePreview.innerHTML = `<img alt="" src="${dataUrl}">`;
+      el.baseCopy.textContent = `${source} is now the identity lock. Analyzing the character...`;
+      addLog("ok", `Base reference loaded from ${source}.`);
+      await analyzeBaseReference(dataUrl, source);
+      renderQuickCards();
+    }
+
+    async function importRowFile(file, state) {
+      const dataUrl = await fileToDataUrl(file);
+      const img = await imageFromSrc(dataUrl);
+      const normalized = normalizeRowFromImage(img, state);
+      storeRow(state, normalized.canvas, normalized.validation, file.name);
+    }
+
+    async function importAtlasFile(file) {
+      const dataUrl = await fileToDataUrl(file);
+      const img = await imageFromSrc(dataUrl);
+      await importAtlasImage(img, file.name);
+    }
+
+    function sanitizeAtlasRow(rowCanvas, state) {
+      let removedArtifacts = 0;
+      for (let col = 0; col < state.frames; col++) {
+        const frame = makeCanvas(CELL_W, CELL_H);
+        const frameCtx = frame.getContext("2d");
+        frameCtx.drawImage(rowCanvas, col * CELL_W, 0, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+        removedArtifacts += removeDetachedArtifacts(frame);
+        rowCanvas.getContext("2d").clearRect(col * CELL_W, 0, CELL_W, CELL_H);
+        rowCanvas.getContext("2d").drawImage(frame, col * CELL_W, 0);
+      }
+      const stabilized = stabilizeRowFrames(rowCanvas, state);
+      const validation = validateRowCanvas(rowCanvas, state);
+      if (removedArtifacts) validation.warnings.push(`${state.label} removed ${removedArtifacts} tiny detached artifact${removedArtifacts === 1 ? "" : "s"}.`);
+      if (stabilized) validation.warnings.push(`${state.label} stabilized ${stabilized} frame${stabilized === 1 ? "" : "s"} to reduce jitter.`);
+      validation.ok = validation.errors.length === 0;
+      return { canvas: rowCanvas, validation };
+    }
+
+    async function importAtlasImage(img, source, rowMap = {}) {
+      if ((img.naturalWidth || img.width) !== ATLAS_W) {
+        addLog("error", `${source} is ${img.width}x${img.height}; expected width ${ATLAS_W}.`);
+        return;
+      }
+      if ((img.naturalHeight || img.height) < ATLAS_H) {
+        addLog("error", `${source} is too short; expected at least ${ATLAS_H}px high.`);
+        return;
+      }
+      const sourceCanvas = makeCanvas(img.naturalWidth || img.width, img.naturalHeight || img.height);
+      sourceCanvas.getContext("2d").drawImage(img, 0, 0);
+      const baseCanvas = makeCanvas(CELL_W, CELL_H);
+      const baseRow = rowMap.idle ?? 0;
+      baseCanvas.getContext("2d").drawImage(sourceCanvas, 0, baseRow * CELL_H, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+      await importBaseFromDataUrl(baseCanvas.toDataURL("image/png"), `${source} idle frame`);
+      for (const state of STATES) {
+        const sourceRow = rowMap[state.id] ?? state.row;
+        const rowCanvas = makeCanvas(ATLAS_W, CELL_H);
+        rowCanvas.getContext("2d").drawImage(sourceCanvas, 0, sourceRow * CELL_H, ATLAS_W, CELL_H, 0, 0, ATLAS_W, CELL_H);
+        const sanitized = sanitizeAtlasRow(rowCanvas, state);
+        storeRow(state, sanitized.canvas, sanitized.validation, source);
+      }
+      composeAtlas();
+      addLog("ok", `Imported ${source} as a complete atlas.`);
+    }
+
+    async function loadSample() {
+      try {
+        const img = await imageFromSrc(`${SAMPLE_ATLAS}?v=${Date.now()}`);
+        await importAtlasImage(img, "Lamuh sample atlas", LAMUH_SAMPLE_ROW_MAP);
+      } catch (error) {
+        addLog("error", `Could not load sample atlas: ${error.message || error}`);
+      }
+    }
+
+    async function callGeneration(payload) {
+      const res = await fetch("/api/openai-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        if (data.prompt) showPrompt("Generation prompt", data.prompt);
+        throw new Error(data.message || data.error || "Generation failed");
+      }
+      return `data:image/png;base64,${data.imageBase64}`;
+    }
+
+    async function generateBase() {
+      const prompt = basePrompt();
+      if (!apiCanGenerate()) {
+        showPrompt("Step 1: make the base character", [
+          "Use this prompt first. Do not ask the image model for animation yet.",
+          "",
+          prompt
+        ].join("\n"));
+        addLog("warning", "Manual image mode: copied the base character prompt. Generate it in your image tool, then import the result.");
+        return false;
+      }
+      try {
+        addLog("info", "Requesting base reference image.");
+        const dataUrl = await callGeneration({ stage: "base", prompt, size: "1024x1024" });
+        await importBaseFromDataUrl(dataUrl, "OpenAI API");
+        return true;
+      } catch (error) {
+        addLog("warning", error.message);
+        return false;
+      }
+    }
+
+    async function generateRow(state) {
+      const prompt = rowPrompt(state);
+      if (!apiCanGenerate()) {
+        const manual = manualPromptForStates([state]);
+        showPrompt(manual.title, manual.text);
+        addLog("warning", "Manual image mode: copied the next row prompt. Generate/import one row at a time.");
+        return false;
+      }
+      if (!app.baseDataUrl) {
+        showPrompt(`${state.label} prompt`, prompt);
+        addLog("warning", "Import or generate a base reference before row generation.");
+        return false;
+      }
+      try {
+        addLog("info", `Requesting ${state.label} row.`);
+        const dataUrl = await callGeneration({
+          stage: "row",
+          rowId: state.id,
+          expectedFrames: state.frames,
+          prompt,
+          referenceImage: app.baseDataUrl,
+          size: el.imageSize.value
+        });
+        const img = await imageFromSrc(dataUrl);
+        const normalized = normalizeRowFromImage(img, state);
+        storeRow(state, normalized.canvas, normalized.validation, "OpenAI API");
+        return true;
+      } catch (error) {
+        addLog("warning", error.message);
+        return false;
+      }
+    }
+
+    async function generateRowsBatch(stateIds) {
+      if (app.generatingBatch) return;
+      const states = stateIds.map(id => STATES.find(state => state.id === id)).filter(Boolean);
+      if (!states.length) return;
+      app.generatingBatch = true;
+      renderQuickCards();
+
+      try {
+        if (!apiCanGenerate()) {
+          const manual = manualPromptForStates(states);
+          showPrompt(manual.title, manual.text);
+          addLog("warning", "Manual mode gives one image prompt at a time so the image model does not make an unusable full spritesheet.");
+          return;
+        }
+
+        if (!app.baseDataUrl) {
+          addLog("info", "No base reference yet. Making the character first.");
+          const madeBase = await generateBase();
+          if (!madeBase) return;
+        }
+
+        let made = 0;
+        for (const state of states) {
+          if (app.rows.has(state.id)) {
+            addLog("info", `${state.label} already exists; skipping.`);
+            continue;
+          }
+          const ok = await generateRow(state);
+          if (ok) made++;
+        }
+
+        if (made > 0) {
+          composeAtlas();
+          addLog("ok", `Batch finished with ${made} new animation row${made === 1 ? "" : "s"}.`);
+        } else {
+          addLog("info", "Batch finished. No missing rows needed generation.");
+        }
+      } finally {
+        app.generatingBatch = false;
+        renderQuickCards();
+      }
+    }
+
+    function composeAtlas() {
+      const atlas = el.atlasCache;
+      const ctx = atlas.getContext("2d");
+      ctx.clearRect(0, 0, ATLAS_W, ATLAS_H);
+      const idleFallback = app.rows.get("idle");
+      for (const state of STATES) {
+        const row = app.rows.get(state.id) || idleFallback;
+        if (row) ctx.drawImage(row.canvas, 0, state.row * CELL_H);
+      }
+      updateMetrics();
+      const ready = canBuildPet();
+      el.exportWebp.disabled = !ready;
+      el.exportJson.disabled = !ready;
+      el.spawnPet.disabled = !ready;
+      el.packageStatus.innerHTML = ready
+        ? '<span class="dot ok"></span>Pet ready'
+        : '<span class="dot warn"></span>Add core animations';
+      addLog(ready ? "ok" : "warning", ready ? "Pet built. Missing optional animations will use idle." : "Add idle, running right, and running left before spawning.");
+      drawPreview(true);
+    }
+
+    function petJson() {
+      const context = captureCharacterContext();
+      const id = slugify(context.name);
+      return {
+        id,
+        displayName: context.name || "Custom Pet",
+        description: context.description,
+        spritesheetPath: "spritesheet.webp",
+        format: {
+          columns: COLS,
+          rows: ROWS,
+          cellWidth: CELL_W,
+          cellHeight: CELL_H,
+          atlasWidth: ATLAS_W,
+          atlasHeight: ATLAS_H
+        },
+        states: Object.fromEntries(STATES.map(state => [state.id, {
+          row: state.row,
+          frames: state.frames
+        }]))
+      };
+    }
+
+    function exportAtlas(type) {
+      const context = captureCharacterContext();
+      composeAtlas();
+      const id = slugify(context.name);
+      const mime = type === "png" ? "image/png" : "image/webp";
+      const filename = type === "png" ? `${id}-spritesheet.png` : `${id}-spritesheet.webp`;
+      el.atlasCache.toBlob(blob => {
+        if (blob) downloadBlob(blob, filename);
+      }, mime, 0.96);
+    }
+
+    function exportJson() {
+      const context = captureCharacterContext();
+      const id = slugify(context.name);
+      const blob = new Blob([JSON.stringify(petJson(), null, 2)], { type: "application/json" });
+      downloadBlob(blob, `${id}-pet.json`);
+    }
+
+    function canvasDataUrl(canvas, type = "image/webp", quality = 0.96) {
+      return canvas.toDataURL(type, quality);
+    }
+
+    async function spawnPet(dryRun = false) {
+      composeAtlas();
+      const ready = canBuildPet();
+      if (!ready) {
+        addLog("warning", "Add idle, running right, and running left before spawning the pet.");
+        return;
+      }
+      el.spawnPet.disabled = true;
+      const oldText = el.spawnPet.textContent;
+      el.spawnPet.textContent = dryRun ? "Saving..." : "Spawning...";
+      try {
+        const res = await fetch("/api/spawn-pet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            petJson: petJson(),
+            spritesheetDataUrl: canvasDataUrl(el.atlasCache),
+            dryRun
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.error || "Spawn failed");
+        addLog("ok", dryRun ? `Saved pet package: ${data.packageDir}` : `Spawned pet process ${data.pid}. Package: ${data.packageDir}`);
+      } catch (error) {
+        addLog("error", error.message || String(error));
+      } finally {
+        el.spawnPet.textContent = oldText;
+        el.spawnPet.disabled = !canBuildPet();
+      }
+    }
+
+    function updateMetrics() {
+      let errors = 0;
+      let warnings = 0;
+      for (const row of app.rows.values()) {
+        errors += row.validation.errors.length;
+        warnings += row.validation.warnings.length;
+      }
+      el.rowsReady.textContent = String(app.rows.size);
+      el.errorCount.textContent = String(errors);
+      el.warningCount.textContent = String(warnings);
+      const ready = canBuildPet();
+      el.packageStatus.innerHTML = ready
+        ? '<span class="dot ok"></span>Pet ready'
+        : `<span class="dot warn"></span>${CORE_STATE_IDS.filter(id => app.rows.has(id)).length}/3 core`;
+      el.spawnPet.disabled = !ready;
+      el.exportWebp.disabled = !ready;
+      el.exportJson.disabled = !ready;
+      updateFlowStatus(errors, warnings, ready);
+    }
+
+    function setFlowStep(node, ready, warn = false) {
+      if (!node) return;
+      node.classList.toggle("ready", ready);
+      node.classList.toggle("warn", !ready && warn);
+    }
+
+    function statusPill(text, status = "") {
+      return `<span class="dot ${status}"></span>${escapeHtml(text)}`;
+    }
+
+    function setFlowStepKey(key) {
+      captureCharacterContext();
+      app.flowStep = key;
+      el.flowContext.hidden = key === "describe";
+      el.flowPanels.forEach(panel => {
+        panel.hidden = panel.dataset.flowPanel !== key;
+      });
+      el.flowNav.forEach(item => {
+        item.classList.toggle("active", item.dataset.flowNav === key);
+      });
+      if (key === "preview") copyPreviewToFlow();
+    }
+
+    function syncOnboardingToStudio() {
+      captureCharacterContext("wizard");
+    }
+
+    function syncStudioToOnboarding() {
+      captureCharacterContext("studio");
+    }
+
+    function copyPreviewToFlow() {
+      if (!el.flowPreviewCanvas) return;
+      const source = el.previewCanvas;
+      const target = el.flowPreviewCanvas;
+      const ctx = target.getContext("2d");
+      ctx.clearRect(0, 0, CELL_W, CELL_H);
+      ctx.drawImage(source, 0, 0);
+    }
+
+    function updateFlowStatus(errors = 0, warnings = 0, ready = canBuildPet()) {
+      const baseReady = Boolean(app.baseDataUrl);
+      const coreReady = CORE_STATE_IDS.filter(id => app.rows.has(id)).length;
+      const rowsReady = app.rows.size;
+      const validRows = rowsReady > 0 && errors === 0;
+      const idleReady = app.rows.has("idle");
+      const runRightReady = app.rows.has("running-right");
+      const runLeftReady = app.rows.has("running-left");
+
+      setFlowStep(el.flowStepCharacter, baseReady);
+      setFlowStep(el.flowStepIdle, idleReady, baseReady);
+      setFlowStep(el.flowStepRunRight, runRightReady, idleReady);
+      setFlowStep(el.flowStepRunLeft, runLeftReady, idleReady);
+      setFlowStep(el.flowStepValidate, validRows, rowsReady > 0 && errors > 0);
+      setFlowStep(el.flowStepSpawn, ready, validRows);
+
+      el.flowCharacterStatus.innerHTML = baseReady ? statusPill("Ready", "ok") : statusPill("Needed");
+      el.flowIdleStatus.innerHTML = idleReady ? statusPill("Ready", "ok") : statusPill("Needed", baseReady ? "warn" : "");
+      el.flowRunRightStatus.innerHTML = runRightReady ? statusPill("Ready", "ok") : statusPill("Needed", idleReady ? "warn" : "");
+      el.flowRunLeftStatus.innerHTML = runLeftReady ? statusPill("Ready", "ok") : statusPill("Needed", idleReady ? "warn" : "");
+      el.flowValidateStatus.innerHTML = errors ? statusPill(`${errors} errors`, "err") : rowsReady ? statusPill(warnings ? `${warnings} warnings` : "Clean", warnings ? "warn" : "ok") : statusPill("Waiting");
+      el.flowSpawnStatus.innerHTML = ready ? statusPill("Ready", "ok") : statusPill("Locked");
+      el.flowSpawn.disabled = !ready;
+      el.flowExport.disabled = !ready;
+      el.flowRowsReady.textContent = String(rowsReady);
+      el.flowErrorCount.textContent = String(errors);
+      el.flowWarningCount.textContent = String(warnings);
+      copyPreviewToFlow();
+    }
+
+    function renderRows() {
+      const canGenerateImages = apiCanGenerate();
+      el.rowQueue.innerHTML = STATES.map(state => {
+        const row = app.rows.get(state.id);
+        const status = row ? row.validation.ok ? "ok" : "warn" : "";
+        const validationText = row
+          ? `${row.validation.errors.length} errors, ${row.validation.warnings.length} warnings`
+          : `${state.frames} active frames`;
+        return `
+          <div class="row-item ${app.activeState === state.id ? "active" : ""}" data-state="${state.id}">
+            <div class="row-index">${state.row}</div>
+            <div class="row-main">
+              <div class="row-name"><span class="dot ${status}"></span>${escapeHtml(state.label)}</div>
+              <div class="row-meta"><span>${escapeHtml(validationText)}</span><span>${row ? escapeHtml(row.source) : "not loaded"}</span></div>
+            </div>
+            <div class="row-actions">
+              <button data-action="prompt" data-state="${state.id}">Prompt</button>
+              ${canGenerateImages ? `<button data-action="generate" data-state="${state.id}" class="primary">Generate</button>` : ""}
+              <button data-action="import" data-state="${state.id}">Import</button>
+              <button data-action="preview" data-state="${state.id}">View</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderQuickCards() {
+      const baseReady = Boolean(app.baseDataUrl);
+      const disabled = app.generatingBatch ? " disabled" : "";
+      const canGenerateImages = apiCanGenerate();
+      const cards = [
+        {
+          id: "character",
+          title: "Character",
+          meta: baseReady ? "Ready" : canGenerateImages ? "Generate or import one image" : "Prompt or import one image",
+          ready: baseReady,
+          buttons: [
+            `<button data-quick="base-generate" class="primary"${disabled}>${canGenerateImages ? "Make" : "Base prompt"}</button>`,
+            `<button data-quick="base-import"${disabled}>Import</button>`
+          ]
+        },
+        ...QUICK_STATE_IDS.map(id => {
+          const state = STATES.find(item => item.id === id);
+          const row = app.rows.get(id);
+          const optional = id === "waving";
+          return {
+            id,
+            title: state.label,
+            meta: row ? "Ready" : optional ? "Optional but friendly" : `${state.frames} frames`,
+            ready: Boolean(row),
+            buttons: [
+              `<button data-quick="prompt" data-state="${state.id}">Prompt</button>`,
+              canGenerateImages ? `<button data-quick="generate" data-state="${state.id}" class="primary"${disabled}>Make</button>` : "",
+              `<button data-quick="import" data-state="${state.id}"${disabled}>Import</button>`
+            ].filter(Boolean)
+          };
+        })
+      ];
+      el.quickGrid.innerHTML = cards.map(card => `
+        <div class="quick-card ${card.ready ? "ready" : ""}">
+          <header>
+            <strong>${escapeHtml(card.title)}</strong>
+            <span><span class="dot ${card.ready ? "ok" : ""}"></span></span>
+          </header>
+          <span>${escapeHtml(card.meta)}</span>
+          <div class="button-row">${card.buttons.join("")}</div>
+        </div>
+      `).join("");
+    }
+
+    function drawPreview(resetFrame = false) {
+      if (resetFrame) app.frame = 0;
+      const state = STATES.find(item => item.id === app.activeState) || STATES[0];
+      const ctx = el.previewCanvas.getContext("2d");
+      ctx.clearRect(0, 0, CELL_W, CELL_H);
+      const row = app.rows.get(state.id);
+      if (row) {
+        const frame = Math.floor(app.frame) % state.frames;
+        ctx.drawImage(row.canvas, frame * CELL_W, 0, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+      } else {
+        ctx.fillStyle = "rgba(72, 215, 210, 0.08)";
+        ctx.fillRect(30, 52, 132, 104);
+        ctx.strokeStyle = "rgba(72, 215, 210, 0.45)";
+        ctx.strokeRect(30.5, 52.5, 131, 103);
+      }
+      el.previewStatePill.textContent = state.label;
+      copyPreviewToFlow();
+    }
+
+    function animate() {
+      app.frame += app.fps / 60;
+      drawPreview(false);
+      requestAnimationFrame(animate);
+    }
+
+    function openFileTarget(target) {
+      captureCharacterContext();
+      app.fileTarget = target;
+      el.fileInput.value = "";
+      el.fileInput.click();
+    }
+
+    function initEvents() {
+      document.getElementById("advanced-toggle-btn").addEventListener("click", event => {
+        document.body.classList.toggle("show-advanced");
+        event.currentTarget.textContent = document.body.classList.contains("show-advanced") ? "Simple" : "Advanced";
+      });
+      const toggleFullWorkflow = (button) => {
+        const advancedButton = document.getElementById("advanced-toggle-btn");
+        if (!document.body.classList.contains("show-advanced")) {
+          document.body.classList.add("show-advanced");
+          advancedButton.textContent = "Simple";
+          if (button) button.textContent = "Hide full workflow";
+        } else {
+          document.body.classList.remove("show-advanced");
+          advancedButton.textContent = "Advanced";
+          if (button) button.textContent = "Show full workflow";
+        }
+      };
+      el.flowName.addEventListener("input", syncOnboardingToStudio);
+      el.flowDescription.addEventListener("input", syncOnboardingToStudio);
+      el.petName.addEventListener("input", syncStudioToOnboarding);
+      el.description.addEventListener("input", syncStudioToOnboarding);
+      document.querySelectorAll("[data-flow-example]").forEach(button => {
+        button.addEventListener("click", () => {
+          el.flowDescription.value = button.dataset.flowExample;
+          syncOnboardingToStudio();
+        });
+      });
+      el.flowNav.forEach(item => item.addEventListener("click", () => setFlowStepKey(item.dataset.flowNav)));
+      document.querySelectorAll("[data-flow-next]").forEach(button => button.addEventListener("click", () => {
+        syncOnboardingToStudio();
+        setFlowStepKey(button.dataset.flowNext);
+      }));
+      document.querySelectorAll("[data-flow-back]").forEach(button => button.addEventListener("click", () => setFlowStepKey(button.dataset.flowBack)));
+      document.getElementById("flow-to-character-btn").addEventListener("click", () => {
+        syncOnboardingToStudio();
+        setFlowStepKey("character");
+      });
+      document.getElementById("flow-sample-btn").addEventListener("click", loadSample);
+      document.getElementById("flow-advanced-btn").addEventListener("click", event => toggleFullWorkflow(event.currentTarget));
+      document.getElementById("flow-character-make").addEventListener("click", generateBase);
+      document.getElementById("flow-character-import").addEventListener("click", () => openFileTarget({ type: "base" }));
+      document.getElementById("flow-idle-sample-btn").addEventListener("click", loadSample);
+      document.getElementById("flow-idle-make").addEventListener("click", () => generateRowsBatch(["idle"]));
+      document.getElementById("flow-idle-import").addEventListener("click", () => openFileTarget({ type: "row", stateId: "idle" }));
+      document.getElementById("flow-run-right-make").addEventListener("click", () => generateRowsBatch(["running-right"]));
+      document.getElementById("flow-run-right-import").addEventListener("click", () => openFileTarget({ type: "row", stateId: "running-right" }));
+      document.getElementById("flow-run-left-make").addEventListener("click", () => generateRowsBatch(["running-left"]));
+      document.getElementById("flow-run-left-import").addEventListener("click", () => openFileTarget({ type: "row", stateId: "running-left" }));
+      document.getElementById("flow-build-btn").addEventListener("click", composeAtlas);
+      document.getElementById("flow-validate-btn").addEventListener("click", () => {
+        for (const state of STATES) {
+          const row = app.rows.get(state.id);
+          if (row) row.validation = validateRowCanvas(row.canvas, state);
+        }
+        renderRows();
+        updateMetrics();
+        addLog("ok", "Rows revalidated.");
+      });
+      el.flowSpawn.addEventListener("click", () => spawnPet(false));
+      el.flowExport.addEventListener("click", () => exportAtlas("webp"));
+      document.getElementById("flow-show-all-btn").addEventListener("click", event => {
+        if (!document.body.classList.contains("show-advanced")) toggleFullWorkflow(null);
+        document.getElementById("row-queue").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      document.getElementById("flow-scroll-studio-btn").addEventListener("click", () => {
+        document.querySelector(".workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      document.getElementById("flow-start-over-btn").addEventListener("click", () => setFlowStepKey("describe"));
+      document.getElementById("base-prompt-btn").addEventListener("click", () => showPrompt("Base prompt", basePrompt()));
+      document.getElementById("generate-base-btn").addEventListener("click", generateBase);
+      document.getElementById("import-base-btn").addEventListener("click", () => openFileTarget({ type: "base" }));
+      document.getElementById("import-atlas-btn").addEventListener("click", () => openFileTarget({ type: "atlas" }));
+      document.getElementById("load-sample-btn").addEventListener("click", loadSample);
+      document.getElementById("make-core-btn").addEventListener("click", () => generateRowsBatch(CORE_STATE_IDS));
+      document.getElementById("make-all-btn").addEventListener("click", () => generateRowsBatch(STATES.map(state => state.id)));
+      document.getElementById("copy-all-prompts-btn").addEventListener("click", () => showPrompt("All generation prompts", allPrompts()));
+      document.getElementById("compose-btn").addEventListener("click", composeAtlas);
+      document.getElementById("validate-btn").addEventListener("click", () => {
+        for (const state of STATES) {
+          const row = app.rows.get(state.id);
+          if (row) row.validation = validateRowCanvas(row.canvas, state);
+        }
+        renderRows();
+        updateMetrics();
+        addLog("ok", "Rows revalidated.");
+      });
+      document.getElementById("clear-log-btn").addEventListener("click", () => {
+        app.logs = [];
+        renderLog();
+      });
+      document.getElementById("close-prompt-btn").addEventListener("click", () => el.promptDrawer.classList.remove("open"));
+      document.getElementById("copy-prompt-btn").addEventListener("click", () => copyText(el.promptText.value));
+      document.getElementById("save-prompt-btn").addEventListener("click", () => {
+        downloadBlob(new Blob([el.promptText.value], { type: "text/plain" }), `${slugify(el.promptTitle.textContent)}.txt`);
+      });
+      el.exportWebp.addEventListener("click", () => exportAtlas("webp"));
+      el.exportJson.addEventListener("click", exportJson);
+      el.spawnPet.addEventListener("click", () => spawnPet(false));
+      el.previewFps.addEventListener("change", event => {
+        app.fps = Number(event.target.value);
+      });
+      el.previewState.addEventListener("change", event => {
+        app.activeState = event.target.value;
+        renderRows();
+        drawPreview(true);
+      });
+      el.rowQueue.addEventListener("click", event => {
+        const button = event.target.closest("button");
+        if (!button) {
+          const item = event.target.closest(".row-item");
+          if (item) {
+            app.activeState = item.dataset.state;
+            el.previewState.value = app.activeState;
+            renderRows();
+            drawPreview(true);
+          }
+          return;
+        }
+        const state = STATES.find(item => item.id === button.dataset.state);
+        if (!state) return;
+        const action = button.dataset.action;
+        if (action === "prompt") showManualPromptForStates([state]);
+        if (action === "generate") generateRow(state);
+        if (action === "import") openFileTarget({ type: "row", stateId: state.id });
+        if (action === "preview") {
+          app.activeState = state.id;
+          el.previewState.value = state.id;
+          renderRows();
+          drawPreview(true);
+        }
+      });
+      el.quickGrid.addEventListener("click", event => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const action = button.dataset.quick;
+        if (action === "base-generate") generateBase();
+        if (action === "base-import") openFileTarget({ type: "base" });
+        const state = STATES.find(item => item.id === button.dataset.state);
+        if (!state) return;
+        if (action === "prompt") showManualPromptForStates([state]);
+        if (action === "generate") generateRow(state);
+        if (action === "import") openFileTarget({ type: "row", stateId: state.id });
+      });
+      el.fileInput.addEventListener("change", async event => {
+        const file = event.target.files[0];
+        if (!file || !app.fileTarget) return;
+        try {
+          if (app.fileTarget.type === "base") {
+            await importBaseFromDataUrl(await fileToDataUrl(file), file.name);
+          } else if (app.fileTarget.type === "atlas") {
+            await importAtlasFile(file);
+          } else if (app.fileTarget.type === "row") {
+            const state = STATES.find(item => item.id === app.fileTarget.stateId);
+            await importRowFile(file, state);
+          }
+        } catch (error) {
+          addLog("error", error.message || String(error));
+        }
+      });
+    }
+
+    function init() {
+      STATES.forEach(state => {
+        const option = document.createElement("option");
+        option.value = state.id;
+        option.textContent = state.label;
+        el.previewState.appendChild(option);
+      });
+      renderRows();
+      renderQuickCards();
+      updateMetrics();
+      initEvents();
+      syncOnboardingToStudio();
+      setFlowStepKey("describe");
+      fetchHealth();
+      drawPreview(true);
+      animate();
+      initQuickSpawn();
+    }
+
+    /* ── Quick Spawn Shortcut Logic ──────────────── */
+    function initQuickSpawn() {
+      const dropzone = document.getElementById("qs-dropzone");
+      const fileInput = document.getElementById("qs-file-input");
+      const spawnBtn = document.getElementById("qs-spawn-btn");
+      const previewStage = document.getElementById("qs-preview-stage");
+      const previewCanvas = document.getElementById("qs-preview-canvas");
+      const noPreview = document.getElementById("qs-no-preview");
+      let qsReady = false;
+      let qsFrame = 0;
+      let qsAnimId = null;
+
+      // Click to browse
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      // Drag events
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("drag-over");
+      });
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("drag-over");
+      });
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("drag-over");
+        const file = e.dataTransfer.files[0];
+        if (file) handleQsFile(file);
+      });
+
+      // File input change
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) handleQsFile(file);
+      });
+
+      // Spawn button
+      spawnBtn.addEventListener("click", async () => {
+        if (!qsReady) return;
+        spawnBtn.disabled = true;
+        spawnBtn.textContent = "Spawning...";
+        try {
+          await spawnPet(false);
+        } finally {
+          spawnBtn.disabled = false;
+          spawnBtn.textContent = "🚀 Launch Desktop Pet";
+          spawnBtn.classList.add("ready");
+        }
+      });
+
+      async function handleQsFile(file) {
+        if (!file || !file.type.startsWith("image/")) return;
+
+        // Update drop zone to loading state
+        dropzone.querySelector(".qs-icon").textContent = "⏳";
+        dropzone.querySelector(".qs-label").innerHTML = "Importing...";
+
+        try {
+          const dataUrl = await fileToDataUrl(file);
+          const img = await imageFromSrc(dataUrl);
+          await importAtlasImage(img, file.name);
+          composeAtlas();
+
+          // Update UI state
+          dropzone.classList.add("loaded");
+          dropzone.querySelector(".qs-icon").textContent = "✅";
+          dropzone.querySelector(".qs-label").innerHTML = `<strong>${escapeHtml(file.name)}</strong> loaded`;
+
+          qsReady = canBuildPet();
+          spawnBtn.disabled = !qsReady;
+          if (qsReady) {
+            spawnBtn.textContent = "🚀 Launch Desktop Pet";
+            spawnBtn.classList.add("ready");
+          } else {
+            spawnBtn.textContent = "Missing core rows — check build log";
+            spawnBtn.classList.remove("ready");
+          }
+
+          // Start preview
+          noPreview.style.display = "none";
+          previewStage.classList.add("visible");
+          startQsPreview();
+
+          addLog("ok", `Quick Spawn: ${file.name} imported. ${qsReady ? "Ready to launch!" : "Some rows may be missing."}`);
+        } catch (err) {
+          dropzone.classList.remove("loaded");
+          dropzone.querySelector(".qs-icon").textContent = "❌";
+          dropzone.querySelector(".qs-label").innerHTML = `Import failed — <strong>try another file</strong>`;
+          addLog("error", `Quick Spawn import error: ${err.message || err}`);
+        }
+      }
+
+      function startQsPreview() {
+        if (qsAnimId) cancelAnimationFrame(qsAnimId);
+        qsFrame = 0;
+        const ctx = previewCanvas.getContext("2d");
+        const idleState = STATES.find(s => s.id === "idle") || STATES[0];
+
+        function tick() {
+          qsFrame += app.fps / 60;
+          ctx.clearRect(0, 0, CELL_W, CELL_H);
+          const row = app.rows.get(idleState.id);
+          if (row) {
+            const frame = Math.floor(qsFrame) % idleState.frames;
+            ctx.drawImage(row.canvas, frame * CELL_W, 0, CELL_W, CELL_H, 0, 0, CELL_W, CELL_H);
+          }
+          qsAnimId = requestAnimationFrame(tick);
+        }
+        tick();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

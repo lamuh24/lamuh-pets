@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet QA Preview</title>
+    <style>
+        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+        .pet-container { width: 192px; height: 208px; background: rgba(255,255,255,0.05); border: 1px solid #333; position: relative; overflow: hidden;}
+        .pet-sprite { width: 100%; height: 100%; background-image: url('spritesheet.webp'); background-repeat: no-repeat; background-position: 0px 0px; animation: playSprite 0.8s steps(8) infinite; }
+        @keyframes playSprite { from { background-position-x: 0px; } to { background-position-x: -1536px; } }
+        select { margin-top: 20px; padding: 10px; background: #333; color: white; border: none; outline: none; }
+    </style>
+</head>
+<body>
+    <h2>Pet QA Preview</h2>
+    <div class="pet-container"><div class="pet-sprite" id="pet"></div></div>
+    <select id="state">
+        <option value="0">Row 0 - Idle</option>
+        <option value="1">Row 1 - Running Right</option>
+        <option value="2">Row 2 - Running Left</option>
+        <option value="3">Row 3 - Waving</option>
+        <option value="4">Row 4 - Jumping</option>
+        <option value="5">Row 5 - Failed</option>
+        <option value="6">Row 6 - Waiting</option>
+        <option value="7">Row 7 - Running</option>
+        <option value="8">Row 8 - Review</option>
+    </select>
+    <script>
+        const sel = document.getElementById('state');
+        sel.addEventListener('change', (e) => {
+            document.getElementById('pet').style.backgroundPositionY = `-${parseInt(e.target.value) * 208}px`;
+        });
+        sel.dispatchEvent(new Event('change'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "name": "lamuh-pets",
+  "version": "1.0.0",
+  "description": "Lamuh Desktop Pets - Premium AI Companions",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.lamuh.pets",
+    "productName": "Lamuh Pets",
+    "copyright": "Copyright © 2026 Lamuh",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "python-dist",
+        "to": "python-dist",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "sign": false,
+      "signingHashAlgorithms": []
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "lamuh24",
+        "repo": "lamuh-pets"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Lamuh Pets"
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.3"
+  }
+}

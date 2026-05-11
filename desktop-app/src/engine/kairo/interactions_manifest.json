@@ -1,0 +1,44 @@
+{
+  "id": "kairo-shonen-interactions",
+  "displayName": "Kairo Shonen Interactions",
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "columns": 8,
+  "background": "transparent",
+  "sourceBackgroundKey": "#FF00FF",
+  "pairedWith": "Lamuh",
+  "notes": [
+    "Kairo is designed as Lamuh's swordsman buddy and friendly rival.",
+    "The opposing_blade_beam_clash_left row fires crimson energy leftward so it can meet Lamuh's blue rightward beam.",
+    "All usable PNG and WebP files have real alpha transparency."
+  ],
+  "rows": [
+    {
+      "state": "three_sword_cyclone_strike",
+      "row": 9,
+      "file": "interactions/kairo_three_sword_cyclone_strike.png",
+      "webp": "interactions/kairo_three_sword_cyclone_strike.webp",
+      "description": "Three-blade ronin wind-up, cyclone slash, and calm after-cut pose."
+    },
+    {
+      "state": "crimson_sword_haki_clash",
+      "row": 10,
+      "file": "interactions/kairo_crimson_sword_haki_clash.png",
+      "webp": "interactions/kairo_crimson_sword_haki_clash.webp",
+      "description": "Crimson sword pressure pose with jagged blade energy for power-clash moments."
+    },
+    {
+      "state": "opposing_blade_beam_clash_left",
+      "row": 11,
+      "file": "interactions/kairo_opposing_blade_beam_clash_left.png",
+      "webp": "interactions/kairo_opposing_blade_beam_clash_left.webp",
+      "description": "Left-firing crimson sword beam designed to clash with Lamuh's blue beam."
+    }
+  ],
+  "combinedFiles": {
+    "interactionsPng": "interactions/kairo_interactions_spritesheet_3x8.png",
+    "interactionsWebp": "interactions/kairo_interactions_spritesheet_3x8.webp",
+    "extendedPng": "kairo_extended_spritesheet_12x8.png",
+    "extendedWebp": "kairo_extended_spritesheet_12x8.webp"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "lamuh-shonen-extended",
+  "displayName": "Lamuh Shonen Extended",
+  "description": "A compact Codex digital pet based on a friendly floating robot avatar with a cyan face display, braided dark shell-like head covering, tiny hover body, and glowing blue accents. Includes three extra shonen interaction animation rows.",
+  "spritesheetPath": "lamuh_extended_spritesheet_12x8.webp",
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "columns": 8,
+  "rows": 12,
+  "states": {
+    "idle": 0,
+    "running-right": 1,
+    "running-left": 2,
+    "waving": 3,
+    "jumping": 4,
+    "failed": 5,
+    "waiting": 6,
+    "running": 7,
+    "review": 8,
+    "naruto_hand_signs": 9,
+    "conqueror_gear_pose": 10,
+    "dragon_ball_beam_clash": 11
+  }
+}

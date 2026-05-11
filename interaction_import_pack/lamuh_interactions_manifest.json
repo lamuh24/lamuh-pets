@@ -1,0 +1,471 @@
+{
+  "id": "lamuh_shonen_interactions",
+  "displayName": "Lamuh Shonen Interaction Animations",
+  "createdAt": "2026-05-04T01:07:41",
+  "background": "transparent",
+  "sourceBackgroundKey": "#FF00FF",
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "framesPerAnimation": 8,
+  "combinedSheet": {
+    "png": "lamuh_interactions_spritesheet_3x8.png",
+    "webp": "lamuh_interactions_spritesheet_3x8.webp",
+    "width": 1536,
+    "height": 624,
+    "rows": 3,
+    "columns": 8
+  },
+  "animations": [
+    {
+      "id": "naruto_hand_signs",
+      "displayName": "Naruto Hand Signs",
+      "row": 0,
+      "frames": 8,
+      "frameWidth": 192,
+      "frameHeight": 208,
+      "stripPng": "lamuh_interaction_naruto_hand_signs.png",
+      "stripWebp": "lamuh_interaction_naruto_hand_signs.webp",
+      "sourceGeneration": "C:\\Users\\qchee\\.codex\\avatars\\lamuh\\lamuh pets\\interaction_import_pack\\source_generations\\ig_025276e505871e290169f825eb2c44819680b4cbeb2dd9acf5.png",
+      "promptTheme": "wide ninja stance, rapid hand signs, dramatic seal, attached smoke puff",
+      "frameProcessing": [
+        {
+          "frame": 0,
+          "sourceCrop": [
+            17,
+            320,
+            218,
+            591
+          ],
+          "fitSize": [
+            154,
+            208
+          ],
+          "paste": [
+            19,
+            0
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceCrop": [
+            234,
+            322,
+            444,
+            595
+          ],
+          "fitSize": [
+            160,
+            208
+          ],
+          "paste": [
+            16,
+            0
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceCrop": [
+            444,
+            322,
+            665,
+            595
+          ],
+          "fitSize": [
+            168,
+            208
+          ],
+          "paste": [
+            12,
+            0
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceCrop": [
+            665,
+            323,
+            887,
+            595
+          ],
+          "fitSize": [
+            170,
+            208
+          ],
+          "paste": [
+            11,
+            0
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceCrop": [
+            887,
+            323,
+            1109,
+            595
+          ],
+          "fitSize": [
+            170,
+            208
+          ],
+          "paste": [
+            11,
+            0
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceCrop": [
+            1109,
+            323,
+            1326,
+            596
+          ],
+          "fitSize": [
+            165,
+            208
+          ],
+          "paste": [
+            13,
+            0
+          ]
+        },
+        {
+          "frame": 6,
+          "sourceCrop": [
+            1330,
+            307,
+            1552,
+            598
+          ],
+          "fitSize": [
+            159,
+            208
+          ],
+          "paste": [
+            16,
+            0
+          ]
+        },
+        {
+          "frame": 7,
+          "sourceCrop": [
+            1552,
+            322,
+            1770,
+            607
+          ],
+          "fitSize": [
+            159,
+            208
+          ],
+          "paste": [
+            16,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conqueror_gear_pose",
+      "displayName": "Conqueror's Haki / Gear Pose",
+      "row": 1,
+      "frames": 8,
+      "frameWidth": 192,
+      "frameHeight": 208,
+      "stripPng": "lamuh_interaction_conqueror_gear_pose.png",
+      "stripWebp": "lamuh_interaction_conqueror_gear_pose.webp",
+      "sourceGeneration": "C:\\Users\\qchee\\.codex\\avatars\\lamuh\\lamuh pets\\interaction_import_pack\\source_generations\\ig_025276e505871e290169f8264d7c908196bc28f5316e6d749a.png",
+      "promptTheme": "wide power pose, cyan aura, dark jagged lightning, small cracked energy plate",
+      "frameProcessing": [
+        {
+          "frame": 0,
+          "sourceCrop": [
+            0,
+            310,
+            248,
+            601
+          ],
+          "fitSize": [
+            177,
+            208
+          ],
+          "paste": [
+            7,
+            0
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceCrop": [
+            248,
+            270,
+            496,
+            602
+          ],
+          "fitSize": [
+            155,
+            208
+          ],
+          "paste": [
+            18,
+            0
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceCrop": [
+            496,
+            217,
+            744,
+            608
+          ],
+          "fitSize": [
+            132,
+            208
+          ],
+          "paste": [
+            30,
+            0
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceCrop": [
+            744,
+            173,
+            992,
+            603
+          ],
+          "fitSize": [
+            120,
+            208
+          ],
+          "paste": [
+            36,
+            0
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceCrop": [
+            992,
+            153,
+            1239,
+            605
+          ],
+          "fitSize": [
+            114,
+            208
+          ],
+          "paste": [
+            39,
+            0
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceCrop": [
+            1239,
+            165,
+            1487,
+            605
+          ],
+          "fitSize": [
+            117,
+            208
+          ],
+          "paste": [
+            37,
+            0
+          ]
+        },
+        {
+          "frame": 6,
+          "sourceCrop": [
+            1487,
+            151,
+            1735,
+            646
+          ],
+          "fitSize": [
+            104,
+            208
+          ],
+          "paste": [
+            44,
+            0
+          ]
+        },
+        {
+          "frame": 7,
+          "sourceCrop": [
+            1735,
+            196,
+            1982,
+            612
+          ],
+          "fitSize": [
+            124,
+            208
+          ],
+          "paste": [
+            34,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dragon_ball_beam_clash",
+      "displayName": "Dragon Ball Beam Clash",
+      "row": 2,
+      "frames": 8,
+      "frameWidth": 192,
+      "frameHeight": 208,
+      "stripPng": "lamuh_interaction_dragon_ball_beam_clash.png",
+      "stripWebp": "lamuh_interaction_dragon_ball_beam_clash.webp",
+      "sourceGeneration": "C:\\Users\\qchee\\.codex\\avatars\\lamuh\\lamuh pets\\interaction_import_pack\\source_generations\\ig_025276e505871e290169f8267bdfd081968c21e5051bde970c.png",
+      "promptTheme": "cupped blue energy, aura charge, forward beam fire, recoil",
+      "frameProcessing": [
+        {
+          "frame": 0,
+          "sourceCrop": [
+            16,
+            191,
+            272,
+            530
+          ],
+          "fitSize": [
+            157,
+            208
+          ],
+          "paste": [
+            17,
+            0
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceCrop": [
+            272,
+            191,
+            533,
+            530
+          ],
+          "fitSize": [
+            160,
+            208
+          ],
+          "paste": [
+            16,
+            0
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceCrop": [
+            543,
+            149,
+            814,
+            531
+          ],
+          "fitSize": [
+            148,
+            208
+          ],
+          "paste": [
+            22,
+            0
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceCrop": [
+            814,
+            201,
+            1086,
+            522
+          ],
+          "fitSize": [
+            176,
+            208
+          ],
+          "paste": [
+            8,
+            0
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceCrop": [
+            1086,
+            191,
+            1358,
+            525
+          ],
+          "fitSize": [
+            169,
+            208
+          ],
+          "paste": [
+            11,
+            0
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceCrop": [
+            1358,
+            205,
+            1629,
+            529
+          ],
+          "fitSize": [
+            174,
+            208
+          ],
+          "paste": [
+            9,
+            0
+          ]
+        },
+        {
+          "frame": 6,
+          "sourceCrop": [
+            1629,
+            205,
+            1900,
+            526
+          ],
+          "fitSize": [
+            176,
+            208
+          ],
+          "paste": [
+            8,
+            0
+          ]
+        },
+        {
+          "frame": 7,
+          "sourceCrop": [
+            1900,
+            211,
+            2162,
+            525
+          ],
+          "fitSize": [
+            174,
+            208
+          ],
+          "paste": [
+            9,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "notes": "Import individual strip files as 1536x208, or import the combined 1536x624 sheet as 3 rows of 8 frames. Usable PNG/WebP files now have real alpha transparency; source generations used #FF00FF chroma key."
+}

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lamuh - Desktop Pet</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00f0ff;
+            --accent-blue: #0055ff;
+            --text-main: #ffffff;
+            --text-muted: #8a8a93;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --frame-width: 192px;
+            --frame-height: 208px;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(0, 85, 255, 0.1) 0%, transparent 50%);
+            font-family: var(--font-family);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            padding: 40px 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .preview-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            position: relative;
+        }
+
+        .pet-container {
+            width: var(--frame-width);
+            height: var(--frame-height);
+            position: relative;
+        }
+
+        .pet-sprite {
+            width: 100%;
+            height: 100%;
+            background-image: url('../spritesheet.webp');
+            background-repeat: no-repeat;
+            /* Default to Row 0 */
+            background-position: 0px 0px; 
+            /* 8 frames per row, so the animation moves x from 0 to -1536px */
+        }
+
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .select-styled {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            appearance: none;
+        }
+
+        .select-styled:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 85, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: var(--font-family);
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: var(--glass-border);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Drop Zone Styles */
+        .drop-zone {
+            border: 2px dashed var(--glass-border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .drop-zone p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .drop-zone .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .quick-spawn-area {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .spawn-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .spawn-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* Animation class that gets toggled via JS */
+        .animating {
+            animation: playSprite 0.8s steps(8) infinite;
+        }
+
+        @keyframes playSprite {
+            from { background-position-x: 0px; }
+            to { background-position-x: -1536px; }
+        }
+
+        /* Ambient glowing orb */
+        .orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+            filter: blur(40px);
+            z-index: 1;
+            pointer-events: none;
+            animation: float 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, -50px); }
+        }
+
+        /* Success Animation for Drop Zone */
+        .drop-success {
+            animation: successPulse 0.5s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 0 20px 10px rgba(0, 240, 255, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+        }
+
+        .instant-launch-ready {
+            background: linear-gradient(135deg, #00f0ff, #0055ff) !important;
+            animation: buttonPulse 2s infinite;
+        }
+
+        @keyframes buttonPulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 240, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb" style="top: -100px; left: -100px;"></div>
+    <div class="orb" style="bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(0, 85, 255, 0.15) 0%, transparent 70%); animation-delay: -5s;"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Lamuh Pet Engine</h1>
+            <p>A Codex-compatible digital companion, reimagined for the web.</p>
+        </div>
+
+        <div class="preview-panel">
+            <div class="status-badge">ONLINE</div>
+            <div class="pet-container" id="pet-container">
+                <div class="pet-sprite animating" id="pet-sprite"></div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="control-group">
+                <label for="animation-state">Animation State</label>
+                <select id="animation-state" class="select-styled">
+                    <option value="0">Row 0 - Idle</option>
+                    <option value="1">Row 1 - Running Right</option>
+                    <option value="2">Row 2 - Running Left</option>
+                    <option value="3">Row 3 - Waving</option>
+                    <option value="4">Row 4 - Jumping</option>
+                    <option value="5">Row 5 - Failed</option>
+                    <option value="6">Row 6 - Waiting</option>
+                    <option value="7">Row 7 - Running</option>
+                    <option value="8">Row 8 - Review</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="sprite-upload">Import Custom Character (Spritesheet)</label>
+                <input type="file" id="sprite-upload" accept="image/*" class="select-styled" style="padding: 8px; box-sizing: border-box; cursor: pointer;">
+            </div>
+
+            <div class="control-group">
+                <label for="animation-speed">Animation Speed (FPS)</label>
+                <select id="animation-speed" class="select-styled">
+                    <option value="0.4s">20 FPS (Fast)</option>
+                    <option value="0.8s" selected>10 FPS (Normal)</option>
+                    <option value="1.6s">5 FPS (Slow)</option>
+                </select>
+            </div>
+
+            <button id="spawn-pip-btn" class="btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                    <path d="M13 8l4 4-4 4"></path>
+                </svg>
+                Spawn Desktop Pet (PiP)
+            </button>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: -10px;">
+                Requires Chrome/Edge 116+. Pops out the pet as an always-on-top window!
+            </p>
+        </div>
+
+        <div class="quick-spawn-area">
+            <div class="spawn-card">
+                <h3>Quick Character Spawner</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;">Have a spritesheet ready? Drop it here to launch your pet instantly.</p>
+                <div class="drop-zone" id="quick-drop-zone">
+                    <span class="icon">📁</span>
+                    <p>Click or drag spritesheet here</p>
+                    <input type="file" id="quick-file-input" accept="image/*" style="display: none;">
+                </div>
+                <button id="instant-spawn-btn" class="btn" disabled>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Launch Now
+                </button>
+            </div>
+
+            <div class="spawn-card" style="justify-content: center; align-items: center; background: radial-gradient(circle at center, rgba(0, 240, 255, 0.05), transparent);">
+                <div id="quick-preview-container" style="display: none; text-align: center;">
+                    <p style="font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 10px; font-weight: 600;">READY TO SPAWN</p>
+                    <div class="pet-container" style="transform: scale(0.8);">
+                        <div class="pet-sprite animating" id="quick-pet-preview" style="background-image: none;"></div>
+                    </div>
+                </div>
+                <div id="no-preview-msg" style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">
+                    <p>Character preview will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-panel" style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 30px;">
+            <h2 style="margin-top: 0; font-size: 1.5rem; color: #fff;">Free AI Character Generator</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
+                Don't have premium AI tools? No problem. Describe the character you want below, and we'll generate the exact, highly-optimized engineering prompt you need to create a perfect 12x8 sprite sheet using free tools like Bing Image Creator.
+            </p>
+            
+            <div class="control-group" style="margin-bottom: 15px;">
+                <label for="char-description" style="color: #fff;">Character Description</label>
+                <input type="text" id="char-description" placeholder="e.g. A cute red dragon holding a tiny wooden sword" style="width: 100%; padding: 14px; box-sizing: border-box; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 12px; font-family: var(--font-family); font-size: 1rem; outline: none;">
+            </div>
+            
+            <button id="generate-prompt-btn" class="btn" style="background: linear-gradient(135deg, #ff00ff, #0055ff); margin-top: 10px; margin-bottom: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Generate Magic Prompt
+            </button>
+
+            <div id="prompt-result" style="display: none; margin-top: 25px; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(0,240,255,0.3);">
+                <p style="margin-top: 0; font-weight: 600; color: var(--accent-cyan);">Step 1: Copy this optimized prompt</p>
+                <textarea id="generated-prompt-text" readonly style="width: 100%; height: 110px; padding: 12px; box-sizing: border-box; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; font-family: monospace; font-size: 0.9rem; resize: none; margin-bottom: 10px;"></textarea>
+                
+                <button id="copy-prompt-btn" class="btn" style="width: auto; padding: 8px 20px; font-size: 0.9rem; margin-top: 0;">
+                    Copy to Clipboard
+                </button>
+                
+                <p style="margin-bottom: 5px; margin-top: 25px; font-weight: 600; color: var(--accent-cyan);">Step 2: Generate & Import</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0; line-height: 1.5;">Go to a free DALL-E 3 generator like <a href="https://www.bing.com/images/create" target="_blank" style="color: #00f0ff; text-decoration: none; font-weight: bold;">Bing Image Creator</a>. Paste the prompt and download your favorite result. Then, use the <strong>"Import Custom Character"</strong> button above to bring them to life!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const petSprite = document.getElementById('pet-sprite');
+            const stateSelect = document.getElementById('animation-state');
+            const speedSelect = document.getElementById('animation-speed');
+            const spriteUpload = document.getElementById('sprite-upload');
+            const spawnPipBtn = document.getElementById('spawn-pip-btn');
+            const petContainer = document.getElementById('pet-container');
+            const previewPanel = document.querySelector('.preview-panel');
+            
+            // AI Prompt elements
+            const charDescription = document.getElementById('char-description');
+            const generatePromptBtn = document.getElementById('generate-prompt-btn');
+            const promptResult = document.getElementById('prompt-result');
+            const generatedPromptText = document.getElementById('generated-prompt-text');
+            const copyPromptBtn = document.getElementById('copy-prompt-btn');
+            
+            // Quick Spawn elements
+            const quickDropZone = document.getElementById('quick-drop-zone');
+            const quickFileInput = document.getElementById('quick-file-input');
+            const instantSpawnBtn = document.getElementById('instant-spawn-btn');
+            const quickPetPreview = document.getElementById('quick-pet-preview');
+            const quickPreviewContainer = document.getElementById('quick-preview-container');
+            const noPreviewMsg = document.getElementById('no-preview-msg');
+            
+            let pipWindow = null;
+            let currentSpriteUrl = new URL('../spritesheet.webp', window.location.href).href;
+            const FRAME_HEIGHT = 208;
+
+            // Helper to update sprite everywhere
+            const updateSprite = (url) => {
+                currentSpriteUrl = url;
+                petSprite.style.backgroundImage = `url('${url}')`;
+                quickPetPreview.style.backgroundImage = `url('${url}')`;
+                
+                // Show preview
+                quickPreviewContainer.style.display = 'block';
+                noPreviewMsg.style.display = 'none';
+                instantSpawnBtn.disabled = false;
+                instantSpawnBtn.classList.add('instant-launch-ready');
+                
+                // Success feedback
+                quickDropZone.classList.add('drop-success');
+                setTimeout(() => quickDropZone.classList.remove('drop-success'), 500);
+                
+                // Update PiP window if it's open
+                if (pipWindow) {
+                    const pipSprite = pipWindow.document.querySelector('.pet-sprite');
+                    if (pipSprite) pipSprite.style.backgroundImage = `url('${url}')`;
+                }
+            };
+
+            // Quick Drop Zone Logic
+            quickDropZone.addEventListener('click', () => quickFileInput.click());
+
+            quickDropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                quickDropZone.classList.add('drag-over');
+            });
+
+            quickDropZone.addEventListener('dragleave', () => {
+                quickDropZone.classList.remove('drag-over');
+            });
+
+            quickDropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                quickDropZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                handleFile(file);
+            });
+
+            quickFileInput.addEventListener('change', (e) => {
+                handleFile(e.target.files[0]);
+            });
+
+            const handleFile = (file) => {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        updateSprite(event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Instant Spawn Button
+            instantSpawnBtn.addEventListener('click', () => {
+                spawnPipBtn.click(); // Trigger the existing spawning logic
+            });
+
+            // Change animation state (row)
+            stateSelect.addEventListener('change', (e) => {
+                const row = parseInt(e.target.value);
+                const yOffset = -(row * FRAME_HEIGHT);
+                
+                petSprite.style.backgroundPositionY = `${yOffset}px`;
+                quickPetPreview.style.backgroundPositionY = `${yOffset}px`;
+                
+                if (pipWindow) {
+                    const pipSprite = pipWindow.document.querySelector('.pet-sprite');
+                    if (pipSprite) pipSprite.style.backgroundPositionY = `${yOffset}px`;
+                }
+            });
+
+            // Change animation speed
+            speedSelect.addEventListener('change', (e) => {
+                petSprite.style.animationDuration = e.target.value;
+                quickPetPreview.style.animationDuration = e.target.value;
+                
+                if (pipWindow) {
+                    const pipSprite = pipWindow.document.querySelector('.pet-sprite');
+                    if (pipSprite) pipSprite.style.animationDuration = e.target.value;
+                }
+            });
+
+            // Handle custom sprite upload (legacy input)
+            spriteUpload.addEventListener('change', (e) => {
+                handleFile(e.target.files[0]);
+            });
+
+            // Handle AI Prompt Generation
+            generatePromptBtn.addEventListener('click', () => {
+                const desc = charDescription.value.trim() || "A cute chibi mascot character";
+                const basePrompt = `A 2D pixel art sprite sheet contact sheet on a solid transparent background. The subject is: ${desc}. The image must be a perfectly aligned 12x8 grid of animation frames. 8 frames horizontally, 12 rows vertically. The style is high-quality 32-bit pixel art, cute, vibrant, thick black outlines. No text, no watermarks, perfectly evenly spaced grid, full body visible in every frame.`;
+                
+                generatedPromptText.value = basePrompt;
+                promptResult.style.display = 'block';
+                
+                // Add a small pulse animation to draw attention
+                promptResult.animate([
+                    { boxShadow: '0 0 0 rgba(0, 240, 255, 0)' },
+                    { boxShadow: '0 0 30px rgba(0, 240, 255, 0.4)' },
+                    { boxShadow: '0 0 0 rgba(0, 240, 255, 0)' }
+                ], { duration: 1000, easing: 'ease-in-out' });
+            });
+
+            // Handle Copy to Clipboard
+            copyPromptBtn.addEventListener('click', () => {
+                generatedPromptText.select();
+                document.execCommand('copy');
+                
+                const originalText = copyPromptBtn.innerText;
+                copyPromptBtn.innerText = "Copied!";
+                copyPromptBtn.style.background = "linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%)";
+                
+                setTimeout(() => {
+                    copyPromptBtn.innerText = originalText;
+                    copyPromptBtn.style.background = "";
+                }, 2000);
+            });
+
+            // Check if Document PiP is supported
+            if (!('documentPictureInPicture' in window)) {
+                spawnPipBtn.disabled = true;
+                spawnPipBtn.innerText = "PiP Not Supported in this Browser";
+            }
+
+            // Spawn PiP
+            spawnPipBtn.addEventListener('click', async () => {
+                if (pipWindow) {
+                    pipWindow.close();
+                    return;
+                }
+
+                try {
+                    // Request the PiP window with the exact dimensions of the pet
+                    pipWindow = await documentPictureInPicture.requestWindow({
+                        width: 192,
+                        height: 208,
+                    });
+
+                    // Add styles to the PiP window
+                    const style = pipWindow.document.createElement('style');
+                    style.textContent = `
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            background-color: transparent; /* Or a dark color if transparent isn't supported */
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            overflow: hidden;
+                            -webkit-app-region: drag; /* Allows dragging by clicking anywhere */
+                        }
+                        .pet-sprite {
+                            width: 192px;
+                            height: 208px;
+                            background-image: url('${currentSpriteUrl}');
+                            background-repeat: no-repeat;
+                            background-position-x: 0px;
+                            animation: playSprite ${speedSelect.value} steps(8) infinite;
+                        }
+                        @keyframes playSprite {
+                            from { background-position-x: 0px; }
+                            to { background-position-x: -1536px; }
+                        }
+                    `;
+                    pipWindow.document.head.appendChild(style);
+
+                    // Move the sprite to the PiP window
+                    pipWindow.document.body.appendChild(petSprite);
+                    
+                    // Maintain current state
+                    const row = parseInt(stateSelect.value);
+                    petSprite.style.backgroundPositionY = `-${row * FRAME_HEIGHT}px`;
+
+                    spawnPipBtn.innerText = "Close Desktop Pet";
+                    
+                    // Handle PiP close event
+                    pipWindow.addEventListener('pagehide', () => {
+                        // Move the sprite back to the main window
+                        petContainer.appendChild(petSprite);
+                        pipWindow = null;
+                        spawnPipBtn.innerHTML = `
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="3" x2="9" y2="21"></line>
+                                <path d="M13 8l4 4-4 4"></path>
+                            </svg>
+                            Spawn Desktop Pet (PiP)
+                        `;
+                    });
+
+                } catch (error) {
+                    console.error("Failed to spawn PiP:", error);
+                    alert("Failed to spawn desktop pet. Ensure you are using a compatible browser (Chrome/Edge 116+) and interacting with the page.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

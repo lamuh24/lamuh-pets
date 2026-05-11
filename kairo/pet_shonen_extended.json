@@ -1,0 +1,24 @@
+{
+  "id": "kairo-shonen-extended",
+  "displayName": "Kairo Shonen Extended",
+  "description": "Lamuh's compact rival-buddy swordsman with crimson three-sword interaction rows for beam clashes and power poses.",
+  "spritesheetPath": "kairo_extended_spritesheet_12x8.webp",
+  "frameWidth": 192,
+  "frameHeight": 208,
+  "columns": 8,
+  "rows": 12,
+  "states": {
+    "idle": 0,
+    "running-right": 1,
+    "running-left": 2,
+    "waving": 3,
+    "jumping": 4,
+    "failed": 5,
+    "waiting": 6,
+    "running": 7,
+    "review": 8,
+    "three_sword_cyclone_strike": 9,
+    "crimson_sword_haki_clash": 10,
+    "opposing_blade_beam_clash_left": 11
+  }
+}

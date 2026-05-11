@@ -1,0 +1,9 @@
+{
+  "ROWS": 12,
+  "spritesheet": "kairo_extended_spritesheet_12x8.webp",
+  "extra_state_map": {
+    "three_sword_cyclone_strike": 9,
+    "crimson_sword_haki_clash": 10,
+    "opposing_blade_beam_clash_left": 11
+  }
+}

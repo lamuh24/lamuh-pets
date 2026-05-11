@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kairo Sprite Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: system-ui, Segoe UI, sans-serif;
+      background: #101318;
+      color: #f4f7fb;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    h1, h2 {
+      margin: 0 0 12px;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+    h1 {
+      font-size: 28px;
+    }
+    h2 {
+      margin-top: 28px;
+      font-size: 18px;
+    }
+    p {
+      margin: 0 0 18px;
+      color: #b9c3d3;
+    }
+    .checker {
+      overflow: auto;
+      padding: 16px;
+      border: 1px solid #293241;
+      border-radius: 8px;
+      background-color: #202633;
+      background-image:
+        linear-gradient(45deg, #2c3442 25%, transparent 25%),
+        linear-gradient(-45deg, #2c3442 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2c3442 75%),
+        linear-gradient(-45deg, transparent 75%, #2c3442 75%);
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      background-size: 20px 20px;
+    }
+    img {
+      image-rendering: pixelated;
+      display: block;
+      max-width: none;
+    }
+    .strip img {
+      width: 1536px;
+      height: 208px;
+    }
+    .atlas img {
+      width: 768px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Kairo</h1>
+    <p>Lamuh's crimson three-blade buddy and friendly rival.</p>
+
+    <h2>Default Atlas</h2>
+    <div class="checker atlas">
+      <img src="spritesheet.png" alt="Kairo default 8 by 9 spritesheet">
+    </div>
+
+    <h2>Three-Sword Cyclone Strike</h2>
+    <div class="checker strip">
+      <img src="interactions/kairo_three_sword_cyclone_strike.png" alt="Kairo three sword cyclone strike strip">
+    </div>
+
+    <h2>Crimson Sword Haki Clash</h2>
+    <div class="checker strip">
+      <img src="interactions/kairo_crimson_sword_haki_clash.png" alt="Kairo crimson sword haki clash strip">
+    </div>
+
+    <h2>Opposing Blade Beam Clash Left</h2>
+    <div class="checker strip">
+      <img src="interactions/kairo_opposing_blade_beam_clash_left.png" alt="Kairo left firing blade beam clash strip">
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+
+# Python caches and local runtime state
+__pycache__/
+*.py[cod]
+pet_state*.json
+world_state.json
+state.txt
+*_stdout.txt
+*_stderr.txt
+*.log
+*.err.log
+*.out.log
+*.err.txt
+
+# Build output and generated binaries
+desktop-app/dist/
+desktop-app/build_tmp/
+desktop-app/python-dist/
+*.exe
+*.blockmap
+*.zip
+*.bak
+
+# Local service/deploy metadata
+.netlify/
+deploy/.netlify/
+.claude/settings.local.json
+
+# Generated experiments and temporary inspection images
+generated_pets/
+*_smoke.png
+*_check.png
+*_capture.png
+pet_studio_*.png
+_inspect_*.png
+_compare_*.png
+_after_*.png
+_proper_*.png
+_sample_*.png
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.vscode/
