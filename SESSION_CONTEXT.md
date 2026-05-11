@@ -6,7 +6,7 @@ Date: 2026-05-11
 
 ## What Was Done
 - Deployed import-feedback update to Netlify production at `https://lamuh-pet-studio-demo.netlify.app` from commit `ca97524`.
-- Added `deploy/_redirects` so the Netlify publish directory includes the root redirect without warnings on future deploys.
+- Added `deploy/_redirects` pointing `/` to `/index.html` so the Netlify publish directory includes a valid root redirect without warnings on future deploys.
 - Updated Pet Hatch Studio import feedback so imported character/base images are marked as loaded, render immediately in the main pet preview area, and imported animation rows switch the preview to the uploaded row.
 - Mirrored the import-feedback update into `deploy/index.html` for the static publish copy.
 - Verified the app on `http://127.0.0.1:8791/pet_studio.html`: Load sample import shows loaded base state, ready preview border, visible imported animation, 9 rows ready, `Pet ready`, and no browser console errors.
